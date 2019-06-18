@@ -1,27 +1,18 @@
 from eth_account.account import (
     Account
 )
-from eth_utils.hexadecimal import decode_hex,encode_hex
-from eth_account._utils.bcostransactions import BcosTransaction
-from eth_account._utils.bcostransactions import(
+from eth_utils.hexadecimal import encode_hex
+from datatypes.bcostransactions import(
     serializable_unsigned_transaction_from_dict,
-    encode_transaction,
-    is_int_or_prefixed_hexstr,
-)
-from collections import (
-    Mapping,
 )
 import rlp
-
-from  utils.abi import filter_by_name
-import json
-from utils.abi import *
-from eth_utils.hexadecimal import decode_hex
-from eth_abi import encode_single, encode_abi,decode_single
 from utils.contracts import (
-    prepare_transaction,
     encode_transaction_data,
+
 )
+
+from eth_abi import encode_single, encode_abi,decode_single,decode_abi
+from eth_utils.hexadecimal import decode_hex,encode_hex
 import json
 keyfile ="d:/blockchain/accounts/pyaccount.keystore"
 
@@ -46,17 +37,18 @@ with open(keyfile, "r") as dump_f:
 with open("sample\AddrTableWorker.abi", 'r') as load_f:
     contract_abi = json.load(load_f)
 #将要调用的函数和参数编码
-inputparams = ('abcefg', 1000, '0x7029c502b4F824d19Bd7921E9cb74Ef92392FB1b')
+inputparams = ['abcefggg', 189, '0x7029c502b4F824d19Bd7921E9cb74Ef92392FB1b']
 #第三个参数是方法的abi，可以传入None，encode_transaction_data做了修改，支持通过方法+参数在整个abi里找到对应的方法abi来编码
 functiondata = encode_transaction_data("create",contract_abi,None,inputparams)
 print("encode_transaction_data:",functiondata)
 #填写一个bcos transaction 的 mapping
 contractAddress= "0x7029c502b4F824d19Bd7921E9cb74Ef92392FB1b"
+import random
 txmap =dict()
-txmap["randomid"] = 500999 #测试用 todo:改为随机数
+txmap["randomid"] = random.randint(0,1000000000)   #测试用 todo:改为随机数
 txmap["gasPrice"] = 30000000
 txmap["gasLimit"] = 30000000
-txmap["blockLimit"] = 101 #测试用，todo：从链上查一下
+txmap["blockLimit"] = 501 #测试用，todo：从链上查一下
 txmap["to"] = contractAddress
 txmap["value"] = 0
 txmap["data"] = functiondata
@@ -65,7 +57,7 @@ txmap["groupId"] = 1
 txmap["extraData"] = ""
 #txmap["chainId"]=None #chainId没用了，fiscoChainId有用
 print(txmap)
-#将mapping构建一个transaction对象
+#将mapping构建一个transaction对象,非必要，用来对照的
 transaction = serializable_unsigned_transaction_from_dict(txmap)
 #感受下transaction encode的原始数据
 print(encode_hex(rlp.encode(transaction)) )
@@ -76,12 +68,57 @@ print(signedTxResult )
 #signedTxResult.rawTransaction是二进制的，要放到rpc接口里要encode下
 print(encode_hex(signedTxResult.rawTransaction) )
 
-
-if True:
-    import utils.rpc
-    url = "http://119.29.114.153:8545"
-    rpc = utils.rpc.HTTPProvider(url)
+import utils.rpc
+url = "http://119.29.114.153:8545"
+rpc = utils.rpc.HTTPProvider(url)
+if False:
     param = [1,encode_hex(signedTxResult.rawTransaction)]
     #发送
     response = rpc.make_request("sendRawTransaction",param)
     print(response)
+
+if True:
+    #testing call
+    functiondata = encode_transaction_data("select",contract_abi,None,['abcefggg'])
+    print("functiondata for call:",functiondata)
+    decoderesult = decode_single("(string)",decode_hex(functiondata[10:]))
+    print("testing decode: ",decoderesult)
+    callmap=dict()
+    callmap["data"] = functiondata
+    callmap["from"] = ac2.address
+    callmap["to"] = contractAddress
+    callmap["value"] = 0
+    print("calldata" , callmap)
+    param = [1, callmap]
+    # 发送
+    response = rpc.make_request("call", param)
+    print(response)
+    outputdata = response["result"]["output"]
+    retabi = "(int256,uint256,address)"
+
+    print("data:",outputdata)
+    decoderesult = decode_single(retabi,decode_hex(outputdata))
+    print(decoderesult)
+    from utils.contracts import get_function_info
+    from utils.abi import *
+
+    fn_abi, fn_selector, fn_arguments = get_function_info(
+        "select", contract_abi, None, ['string'], None,
+    )
+    print ("fn_abi: " ,fn_abi)
+    print("fn_selector: ", fn_selector)
+    print("fn_arguments: ", fn_arguments)
+    outputs = fn_abi["outputs"]
+    print("outputs:",outputs)
+    fn_output_types = get_fn_abi_types_str(fn_abi,"outputs")
+    print("output types str:", fn_output_types)
+    decoderesult = decode_single(fn_output_types, decode_hex(outputdata))
+    print(decoderesult)
+
+    fn_output_types = get_fn_abi_types(fn_abi, "outputs")
+    decoderesult = decode_abi(fn_output_types,decode_hex(outputdata))
+    print("decode  by abi:",decoderesult)
+    fn_input_types = get_fn_abi_types(fn_abi, "inputs")
+    print(fn_input_types)
+    fn_input_types = get_fn_abi_types_str(fn_abi, "inputs")
+    print(fn_input_types)

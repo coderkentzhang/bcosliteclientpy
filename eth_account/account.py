@@ -34,14 +34,14 @@ from hexbytes import (
     HexBytes,
 )
 
-from eth_account._utils.signing import (
+from eth_account._utils.structured_data.signing import (
     hash_of_signed_transaction,
     sign_message_hash,
     sign_transaction_dict,
     to_standard_signature_bytes,
     to_standard_v,
 )
-from eth_account._utils.transactions import (
+from datatypes.transactions import (
     Transaction,
     vrs_from,
 )
@@ -484,17 +484,7 @@ class Account(object):
             'signature': HexBytes(eth_signature_bytes),
         })
 
-    @combomethod
-    def signTransaction(self, transaction_dict, private_key):
-        """
-        .. CAUTION:: Deprecated for :meth:`~eth_account.account.Account.sign_transaction`.
-            This method will be removed in v0.5
-        """
-        warnings.warn(
-            "signTransaction is deprecated in favor of sign_transaction",
-            category=DeprecationWarning,
-        )
-        return self.sign_transaction(transaction_dict, private_key)
+
 
     @combomethod
     def sign_transaction(self, transaction_dict, private_key):

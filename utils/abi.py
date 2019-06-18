@@ -86,7 +86,21 @@ def get_abi_output_types(abi):
         return []
     else:
         return [collapse_if_tuple(arg) for arg in abi['outputs']]
+#return types in ['','','']
+def get_fn_abi_types(abi,name):
+    if abi['type'] == 'fallback':
+        return []
+    else:
+        return [collapse_if_tuple(arg) for arg in abi[name]]
 
+#return types in ('','','')
+def get_fn_abi_types_str(fn_abi,name):
+    if fn_abi['type'] == 'fallback':
+        return []
+    fn_output_types = "(" + ','.join([
+        arg['type'] for arg in normalize_event_input_types(fn_abi.get(name, []))
+        ]) + ")"
+    return fn_output_types
 
 def get_abi_input_names(abi):
     if 'inputs' not in abi and abi['type'] == 'fallback':

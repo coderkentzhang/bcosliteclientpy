@@ -53,6 +53,7 @@ extras_require['dev'] = merge_lists(
 		"requests",
 		"attrdict",
 		"Crypto",
+        "lru-dict",
     ],
     extras_require['test'],
     extras_require['lint'],

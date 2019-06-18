@@ -32,7 +32,7 @@ from rlp.sedes import (
     binary,
 )
 
-from .validation import (
+from eth_account._utils.validation import (
     is_valid_address,
 )
 

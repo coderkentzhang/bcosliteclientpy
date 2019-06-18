@@ -85,9 +85,7 @@ def find_matching_fn_abi(abi, fn_identifier=None, args=None, kwargs=None):
     name_filter = functools.partial(filter_by_name, fn_identifier)
     arg_count_filter = functools.partial(filter_by_argument_count, num_arguments)
     encoding_filter = functools.partial(filter_by_encodability, args, kwargs)
-
     function_candidates = pipe(abi, name_filter, arg_count_filter, encoding_filter)
-
     if len(function_candidates) == 1:
         return function_candidates[0]
     else:

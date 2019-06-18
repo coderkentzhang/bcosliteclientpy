@@ -6,7 +6,7 @@ from eth_utils import (
     to_int,
 )
 
-from eth_account._utils.bcostransactions import (
+from datatypes.bcostransactions import (
     ChainAwareUnsignedTransaction,
     BcosUnsignedTransaction,
     encode_transaction,
@@ -61,7 +61,7 @@ def hash_of_signed_transaction(txn_obj):
     (chain_id, _v) = extract_chain_id(txn_obj.v)
     unsigned_parts = strip_signature(txn_obj)
     if chain_id is None:
-        signable_transaction = UnsignedTransaction(*unsigned_parts)
+        signable_transaction = BcosUnsignedTransaction(*unsigned_parts)
     else:
         extended_transaction = unsigned_parts + [chain_id, 0, 0]
         signable_transaction = ChainAwareUnsignedTransaction(*extended_transaction)
