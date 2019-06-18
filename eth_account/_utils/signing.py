@@ -6,9 +6,9 @@ from eth_utils import (
     to_int,
 )
 
-from eth_account._utils.transactions import (
+from eth_account._utils.bcostransactions import (
     ChainAwareUnsignedTransaction,
-    UnsignedTransaction,
+    BcosUnsignedTransaction,
     encode_transaction,
     serializable_unsigned_transaction_from_dict,
     strip_signature,
@@ -30,7 +30,7 @@ def sign_transaction_dict(eth_key, transaction_dict):
     transaction_hash = unsigned_transaction.hash()
 
     # detect chain
-    if isinstance(unsigned_transaction, UnsignedTransaction):
+    if isinstance(unsigned_transaction, BcosUnsignedTransaction):
         chain_id = None
     else:
         chain_id = unsigned_transaction.v

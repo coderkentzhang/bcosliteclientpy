@@ -49,16 +49,16 @@ def serializable_unsigned_transaction_from_dict(transaction_dict):
         apply_formatters_to_dict(TRANSACTION_FORMATTERS),
     )
     if 'v' in filled_transaction:
-        serializer = Transaction
+        serializer = BcosTransaction
     else:
-        serializer = UnsignedTransaction
+        serializer = BcosUnsignedTransaction
     return serializer.from_dict(filled_transaction)
 
 
 def encode_transaction(unsigned_transaction, vrs):
     (v, r, s) = vrs
     chain_naive_transaction = dissoc(unsigned_transaction.as_dict(), 'v', 'r', 's')
-    signed_transaction = Transaction(v=v, r=r, s=s, **chain_naive_transaction)
+    signed_transaction = BcosTransaction(v=v, r=r, s=s, **chain_naive_transaction)
     return rlp.encode(signed_transaction)
 
 
@@ -86,13 +86,13 @@ TRANSACTION_DEFAULTS = {
     'to': b'',
     'value': 0,
     'data': b'',
-    'chainId': None,
+    'extraData': None,
 }
 
 TRANSACTION_FORMATTERS = {
-    'nonce': hexstr_if_str(to_int),
+    'randomid': hexstr_if_str(to_int),
     'gasPrice': hexstr_if_str(to_int),
-    'gas': hexstr_if_str(to_int),
+    'gasLimit': hexstr_if_str(to_int),
     'to': apply_one_of_formatters((
         (is_string, hexstr_if_str(to_bytes)),
         (is_bytes, identity),
@@ -100,29 +100,39 @@ TRANSACTION_FORMATTERS = {
     )),
     'value': hexstr_if_str(to_int),
     'data': hexstr_if_str(to_bytes),
+    'fiscoChainId': hexstr_if_str(to_int),
+    'groupId': hexstr_if_str(to_int),
+    'extraData':hexstr_if_str(to_bytes),
     'v': hexstr_if_str(to_int),
     'r': hexstr_if_str(to_int),
     's': hexstr_if_str(to_int),
 }
 
 TRANSACTION_VALID_VALUES = {
-    'nonce': is_int_or_prefixed_hexstr,
+    'randomid': is_int_or_prefixed_hexstr,
     'gasPrice': is_int_or_prefixed_hexstr,
-    'gas': is_int_or_prefixed_hexstr,
+    'gasLimit': is_int_or_prefixed_hexstr,
+    'blockLimit': is_int_or_prefixed_hexstr,
     'to': is_empty_or_checksum_address,
     'value': is_int_or_prefixed_hexstr,
     'data': lambda val: isinstance(val, (int, str, bytes, bytearray)),
-    'chainId': lambda val: val is None or is_int_or_prefixed_hexstr(val),
+    'fiscoChainId': lambda val: val is None or is_int_or_prefixed_hexstr(val),
+    'groupId': is_int_or_prefixed_hexstr,
+    'extraData': lambda val: isinstance(val, (int, str, bytes, bytearray)),
 }
 
 ALLOWED_TRANSACTION_KEYS = {
-    'nonce',
+    'randomid',
     'gasPrice',
-    'gas',
+    'gasLimit',
+    'blockLimit',
     'to',
     'value',
     'data',
-    'chainId',  # set chainId to None if you want a transaction that can be replayed across networks
+    'fiscoChainId',
+    'groupId',
+    'extraData',
+
 }
 
 REQUIRED_TRANSACITON_KEYS = ALLOWED_TRANSACTION_KEYS.difference(TRANSACTION_DEFAULTS.keys())
@@ -148,6 +158,7 @@ def assert_valid_fields(transaction_dict):
 
 def chain_id_to_v(transaction_dict):
     # See EIP 155
+    return transaction_dict
     chain_id = transaction_dict.pop('chainId')
     if chain_id is None:
         return transaction_dict
@@ -161,16 +172,20 @@ def fill_transaction_defaults(transaction):
 
 
 UNSIGNED_TRANSACTION_FIELDS = (
-    ('nonce', big_endian_int),
+    ('randomid', big_endian_int),
     ('gasPrice', big_endian_int),
-    ('gas', big_endian_int),
+    ('gasLimit', big_endian_int),
+    ('blockLimit', big_endian_int),
     ('to', Binary.fixed_length(20, allow_empty=True)),
     ('value', big_endian_int),
     ('data', binary),
+    ('fiscoChainId', big_endian_int),
+    ('groupId', big_endian_int),
+    ('extraData', binary),
 )
 
 
-class Transaction(HashableRLP):
+class BcosTransaction(HashableRLP):
     fields = UNSIGNED_TRANSACTION_FIELDS + (
         ('v', big_endian_int),
         ('r', big_endian_int),
@@ -178,11 +193,11 @@ class Transaction(HashableRLP):
     )
 
 
-class UnsignedTransaction(HashableRLP):
+class BcosUnsignedTransaction(HashableRLP):
     fields = UNSIGNED_TRANSACTION_FIELDS
 
 
-ChainAwareUnsignedTransaction = Transaction
+ChainAwareUnsignedTransaction = BcosTransaction
 
 
 def strip_signature(txn):
