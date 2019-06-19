@@ -86,7 +86,7 @@ if True:
     txid = response['result']
     param = [1,txid]
     i=0
-    for i in range(0,3):
+    for i in range(0,15):
         response = rpc.make_request("getTransactionReceipt", param)
         print("getTransactionReceipt : ", response)
         if response["result"] == None:
@@ -99,7 +99,7 @@ if True:
         contractname = os.path.splitext(os.path.basename(contractFile))[0]
         #write to file
         config = ConfigObj("sample/contract.ini",encoding='UTF8')
-        if config['address'] == None:
+        if "addess" not in config:
             config['address']={}
         config['address'][contractname] = newaddr
         config.write()

@@ -54,6 +54,7 @@ extras_require['dev'] = merge_lists(
 		"attrdict",
 		"Crypto",
         "lru-dict",
+        "configobj"
     ],
     extras_require['test'],
     extras_require['lint'],
