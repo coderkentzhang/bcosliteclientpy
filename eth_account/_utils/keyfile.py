@@ -2,7 +2,6 @@ import hashlib
 import hmac
 import json
 import uuid
-
 from Crypto import Random
 from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import scrypt

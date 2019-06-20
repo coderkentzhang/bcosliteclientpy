@@ -8,10 +8,8 @@ from setuptools import (
 
 def merge_lists(base_list, *other_lists):
     new_list = base_list[:]
-
     for other_list in other_lists:
         new_list.extend(i for i in other_list if i not in new_list)
-
     return new_list
 
 
@@ -37,22 +35,22 @@ extras_require['lint'] = [
     "mypy==0.620",
 ]
 extras_require['doc'] = [
-    "Sphinx>=1.6.5,<2",
-    "sphinx_rtd_theme>=0.1.9",
+   # "Sphinx>=1.6.5,<2",
+   # "sphinx_rtd_theme>=0.1.9",
 ]
 extras_require['dev'] = merge_lists(
     [
         "bumpversion>=0.5.3,<1",
         "pytest-watch>=4.1.0,<5",
         "wheel",
-        "twine",
-        "ipython",
+        #"twine",
+        #"ipython",
 		"cytoolz",
 		"toolz",
-		"hexbytes",
 		"requests",
 		"attrdict",
 		"Crypto",
+		"pycryptodome",
         "lru-dict",
         "configobj"
     ],
@@ -63,11 +61,11 @@ extras_require['dev'] = merge_lists(
 
 setup(
     name='bcosliteclientpy',
-    version='0.1.0',
+    version='0.6.0',
     description="""bcosliteclientpy""",
     long_description_markdown_filename='README.md',
-    author='',
-    author_email='',
+    author='kentzhang',
+    author_email='zkx@vip.qq.com',
     url='',
     include_package_data=True,
     install_requires=[
@@ -79,7 +77,7 @@ setup(
     py_modules=['bcosliteclientpy'],
     license="MIT",
     zip_safe=False,
-    keywords='ethereum',
+    keywords='fisco bcos',
     packages=find_packages(exclude=["tests", "tests.*"]),
     package_data={'bcosliteclientpy': ['py.typed']},
     classifiers=[
@@ -90,6 +88,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+		'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
 )
