@@ -104,7 +104,7 @@ clientdemo.py演示调用client/bcosclient.py里实现的接口，已经实现fi
 sendRawTransaction这两个方法可用于所有已知abi的合约，传入abi定义，方法名，正确的参数列表，即可发送交易。交易由BcosClient里加载的账号进行签名。
 
 
-解析数据采用datatypes/datatypeparse.py里实现的DatatypeParser对象的方法解析数据。
+解析数据采用datatypes/datatypeparse.py里实现的DatatypeParser对象的方法。
 
 
 主要方法有：
