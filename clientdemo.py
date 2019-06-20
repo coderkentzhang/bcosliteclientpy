@@ -13,14 +13,14 @@ print(info)
 
 
 #从文件加载abi定义
-contractFile  ="sample\SimpleInfo.abi"
+contractFile  ="sample/SimpleInfo.abi"
 abi_parser = DatatypeParser()
 abi_parser.load_abi_file(contractFile)
 contract_abi = abi_parser.contract_abi
 
 #部署合约
 print("\n>>Deploy:---------------------------------------------------------------------")
-with open("sample\SimpleInfo.bin", 'r') as load_f:
+with open("sample/SimpleInfo.bin", 'r') as load_f:
     contract_bin = load_f.read()
     load_f.close()
 result = client.deploy(contract_bin)
