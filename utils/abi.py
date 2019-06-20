@@ -86,14 +86,14 @@ def get_abi_output_types(abi):
         return []
     else:
         return [collapse_if_tuple(arg) for arg in abi['outputs']]
-#return types in ['','','']
+#return types in ['','',''] dd by kentz
 def get_fn_abi_types(abi,name):
     if abi['type'] == 'fallback':
         return []
     else:
         return [collapse_if_tuple(arg) for arg in abi[name]]
 
-#return types in ('','','')
+#return types in ('','','') add by kentz
 def get_fn_abi_types_str(fn_abi,name):
     if fn_abi['type'] == 'fallback':
         return []
@@ -123,6 +123,19 @@ def fallback_func_abi_exists(contract_abi):
 
 def get_indexed_event_inputs(event_abi):
     return [arg for arg in event_abi['inputs'] if arg['indexed'] is True]
+
+#add by kentz
+def exclude_indexed_event_inputs_to_array(event_abi):
+    args_not_indexed =exclude_indexed_event_inputs(event_abi)
+    result =  [collapse_if_tuple(arg) for arg in args_not_indexed]
+    return result
+
+def exclude_indexed_event_inputs_to_str(event_abi):
+    args_not_indexed =exclude_indexed_event_inputs(event_abi)
+    result = fn_output_types = "(" + ','.join([
+        arg['type'] for arg in normalize_event_input_types(args_not_indexed)
+        ]) + ")"
+    return result
 
 
 def exclude_indexed_event_inputs(event_abi):

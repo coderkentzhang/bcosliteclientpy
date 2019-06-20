@@ -313,19 +313,27 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"getClientVersion","params":[],"i
         result = self.common_request(cmd,params)
         return result
 
-    def deploy(self, contract_bin):
-        txid = self.sendRawTransaction(to_address="",contract_abi=None,fn_name=None,bin_data=contract_bin)
+    def sendRawTransactionGetReceipt(self, to_address, contract_abi, fn_name, args=None, bin_data=None,timeout=15):
+        txid = self.sendRawTransaction(to_address,contract_abi,fn_name,args,bin_data)
         import time
-        for i in range(0,15):
+        for i in range(0, timeout):
             result = self.getTransactionReceipt(txid)
             print("getTransactionReceipt : ", result)
             if result == None:
                 time.sleep(1)
                 continue
-            newaddr = result['contractAddress']
-            blocknum = result['blockNumber']
-            print("onblock : %d newaddr : %s "%(int(blocknum,16),newaddr))
             return result
+    '''
+        newaddr = result['contractAddress']
+        blocknum = result['blockNumber']
+    '''
+    def deploy(self, contract_bin):
+        result = self.sendRawTransactionGetReceipt\
+            (to_address="",contract_abi=None,fn_name=None,bin_data=contract_bin)
+        newaddr = result['contractAddress']
+        blocknum = result['blockNumber']
+        #print("onblock : %d newaddr : %s "%(int(blocknum,16),newaddr))
+        return result
 
 
 

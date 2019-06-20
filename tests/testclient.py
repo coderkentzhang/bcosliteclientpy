@@ -3,6 +3,8 @@ from client.bcosclient import (
     BcosError
 )
 from eth_utils import to_checksum_address
+from  datatypes import datatype_parser
+from  datatypes.datatype_parser import DatatypeParser
 import json
 client = BcosClient()
 info = client.init()
@@ -70,26 +72,38 @@ contractFile  ="sample\SimpleInfo.abi"
 with open(contractFile, 'r') as load_f:
     contract_abi = json.load(load_f)
     load_f.close()
+abimaven = DatatypeParser()
+abimaven.set_abi(contract_abi)
 
-doRawTxTest = True
-if(doRawTxTest):
-    args = ['simplename', 1024, to_checksum_address('0x7029c502b4F824d19Bd7921E9cb74Ef92392FB1c')]
-    result = client.sendRawTransaction(to_address,contract_abi,"set",args)
-    print(result)
-    import time
-    time.sleep(3)
+print("\n>>Deploy:---------------------------------------------------------------------")
+with open("sample\SimpleInfo.bin", 'r') as load_f:
+    contract_bin = load_f.read()
+    load_f.close()
+result = client.deploy(contract_bin)
+print("deploy",result)
 
-print("\n>>---------------------------------------------------------------------")
-doCallTest = False
-if(doCallTest or doRawTxTest):
-    res = client.call(to_address,contract_abi,"getbalance")
-    print("call",res)
 
-doDeployTest=False
-if(doDeployTest):
-    with open("sample\SimpleInfo.bin", 'r') as load_f:
-        contract_bin = load_f.read()
-        load_f.close()
-    result = client.deploy(contract_bin)
-    print("deploy",result)
+print("\n>>sendRawTransaction:---------------------------------------------------------------------")
+to_address = result['contractAddress'] #use new deploy address
+args = ['simplename', 2024, to_checksum_address('0x7029c502b4F824d19Bd7921E9cb74Ef92392FB1c')]
+result = client.sendRawTransactionGetReceipt(to_address,contract_abi,"set",args)
+print(result)
+logresult = abimaven.parse_event_logs(result["logs"])
+print("parse log ")
+for log in logresult:
+    if 'eventname' in log:
+        print("log name: {} , data: {}".format(log['eventname'],log['eventdata']))
+
+txhash = result['transactionHash']
+txresponse = client.getTransactionByHash(txhash)
+inputresult = abimaven.parse_transaction_input(txresponse['input'])
+print("transaction input parse:",txhash)
+print(inputresult)
+
+
+
+print("\n>>Call:---------------------------------------------------------------------")
+
+res = client.call(to_address,contract_abi,"getbalance")
+print("call",res)
 
