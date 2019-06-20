@@ -263,10 +263,10 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"getClientVersion","params":[],"i
         fn_abi, fn_selector, fn_arguments = get_function_info(
             fn_name, contract_abi, None, args, None,
         )
-        print("fn_selector",fn_selector)
-        print("fn_arguments",fn_arguments)
+        #print("fn_selector",fn_selector)
+        #print("fn_arguments",fn_arguments)
         fn_output_types = get_fn_abi_types_str(fn_abi, "outputs")
-        print("output types str:", fn_output_types)
+        #print("output types str:", fn_output_types)
         decoderesult = decode_single(fn_output_types, decode_hex(outputdata))
         return decoderesult
 
@@ -318,7 +318,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"getClientVersion","params":[],"i
         import time
         for i in range(0, timeout):
             result = self.getTransactionReceipt(txid)
-            print("getTransactionReceipt : ", result)
+            #print("getTransactionReceipt : ", result)
             if result == None:
                 time.sleep(1)
                 continue
@@ -337,4 +337,21 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"getClientVersion","params":[],"i
 
 
 
-
+    def save_contract_address(self,contractname,newaddress,blocknum=None,memo=None):
+        from configobj import ConfigObj
+        import time
+        #write to file
+        config = ConfigObj(client_config.contract_info_file,
+                           encoding='UTF8')
+        if "addess" not in config:
+            config['address']={}
+        config['address'][contractname] = newaddress
+        if blocknum!=None:
+            if "history" not in config:
+                config["history"]={}
+            timestr = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime());
+            detail="{}:{},block:{}".format(contractname,timestr,blocknum)
+            if memo !=None: #
+                detail="{},{}".format(detail,memo)
+            config["history"][newaddress] = detail
+        config.write()

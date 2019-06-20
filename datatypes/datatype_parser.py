@@ -27,7 +27,8 @@ from utils.abi import  (
 
 class DatatypeParser:
     contract_abi = None
-    func_abi_map = dict()
+    func_abi_map_by_selector = dict()
+    func_abi_map_by_name = dict()
     event_abi_map = dict()
     def __init__(self):
         pass
@@ -45,6 +46,8 @@ class DatatypeParser:
             load_f.close()
             self.parse_abi()
 
+
+
     def parse_abi(self):
         '''for item in self.contract_abi:
             if (item["type"] != "constructor"):
@@ -58,7 +61,8 @@ class DatatypeParser:
             #print(func)
             #print(signature)
             #print(encode_hex(selector) )
-            self.func_abi_map[encode_hex(selector)] = func
+            self.func_abi_map_by_selector[encode_hex(selector)] = func
+            self.func_abi_map_by_name[func['name']]= func
 
         eventlist = filter_by_type("event",self.contract_abi)
         for event in eventlist:
@@ -91,10 +95,10 @@ class DatatypeParser:
     def parse_transaction_input(self,inputdata):
         selector = inputdata[0:10]
         argsdata = inputdata[10:]
-        if selector not in self.func_abi_map:
+        if selector not in self.func_abi_map_by_selector:
             return None
-        func_abi = self.func_abi_map[selector]
-        print(func_abi)
+        func_abi = self.func_abi_map_by_selector[selector]
+        #print(func_abi)
         args_abi = get_fn_abi_types(func_abi,"inputs")
         args = decode_abi(args_abi,decode_hex(argsdata) )
         result= dict()
@@ -102,7 +106,14 @@ class DatatypeParser:
         result['args'] = args
         return result
 
-
+    def parse_receipt_output(self,name,outputdata):
+        if name not in self.func_abi_map_by_name:
+            return None
+        func_abi = self.func_abi_map_by_name[name]
+        output_args = get_fn_abi_types(func_abi,"outputs")
+        #print(output_args)
+        result = decode_abi(output_args,decode_hex(outputdata) )
+        return result
 
 
 

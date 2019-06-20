@@ -2,6 +2,7 @@ from client.bcosclient import (
     BcosClient,
     BcosError
 )
+import os
 from eth_utils import to_checksum_address
 from  datatypes import datatype_parser
 from  datatypes.datatype_parser import DatatypeParser
@@ -9,6 +10,69 @@ import json
 client = BcosClient()
 info = client.init()
 print(info)
+
+
+#从文件加载abi定义
+contractFile  ="sample\SimpleInfo.abi"
+abi_parser = DatatypeParser()
+abi_parser.load_abi_file(contractFile)
+contract_abi = abi_parser.contract_abi
+
+#部署合约
+print("\n>>Deploy:---------------------------------------------------------------------")
+with open("sample\SimpleInfo.bin", 'r') as load_f:
+    contract_bin = load_f.read()
+    load_f.close()
+result = client.deploy(contract_bin)
+print("deploy",result)
+print("new address : ",result["contractAddress"])
+contract_name = contractname = os.path.splitext(os.path.basename(contractFile))[0]
+memo = "tx:"+result["transactionHash"]
+#把部署结果存入文件备查
+client.save_contract_address(contract_name,result["contractAddress"],int(result["blockNumber"],16),memo)
+
+#发送交易，调用一个改写数据的接口
+print("\n>>sendRawTransaction:----------------------------------------------------------")
+to_address = result['contractAddress'] #use new deploy address
+args = ['simplename', 2024, to_checksum_address('0x7029c502b4F824d19Bd7921E9cb74Ef92392FB1c')]
+receipt = client.sendRawTransactionGetReceipt(to_address,contract_abi,"set",args)
+print(receipt)
+#解析receipt里的log
+logresult = abi_parser.parse_event_logs(receipt["logs"])
+for log in logresult:
+    if 'eventname' in log:
+        print("log name: {} , data: {}".format(log['eventname'],log['eventdata']))
+#获取对应的交易数据，解析出调用方法名和参数
+txhash = receipt['transactionHash']
+txresponse = client.getTransactionByHash(txhash)
+inputresult = abi_parser.parse_transaction_input(txresponse['input'])
+print("transaction input parse:",txhash)
+print(inputresult)
+
+#解析该交易在receipt里输出的output,即交易调用的方法的return值
+outputresult  = abi_parser.parse_receipt_output(inputresult['name'], receipt['output'])
+print("receipt output :",outputresult)
+
+
+#调用一下call，获取数据
+print("\n>>Call:------------------------------------------------------------------------")
+res = client.call(to_address,contract_abi,"getbalance")
+print("call getbalance result:",res)
+res = client.call(to_address,contract_abi,"getbalance1",[100])
+print("call getbalance1 result:",res)
+res = client.call(to_address,contract_abi,"getname")
+print("call getname:",res)
+res = client.call(to_address,contract_abi,"getall")
+print("call getall result:",res)
+
+
+#以下是查询类的接口，大部分是返回json，可以根据对fisco bcos rpc接口json格式的理解，进行字段获取和转码
+'''
+useful helper:
+int(num,16)  hex -> int
+hex(num)  : int -> hex
+'''
+
 doQueryTest =False
 if doQueryTest:
     print("\n>>---------------------------------------------------------------------")
@@ -64,46 +128,3 @@ if doQueryTest:
     print("getNodeIDList",client.getNodeIDList())
     print("\n>>---------------------------------------------------------------------")
     print("getGroupList",client.getGroupList())
-
-to_address = "0x09d88e27711e78d2c389eb8f532ccdc9abe43077"
-
-#从文件加载abi文本定义
-contractFile  ="sample\SimpleInfo.abi"
-with open(contractFile, 'r') as load_f:
-    contract_abi = json.load(load_f)
-    load_f.close()
-abimaven = DatatypeParser()
-abimaven.set_abi(contract_abi)
-
-print("\n>>Deploy:---------------------------------------------------------------------")
-with open("sample\SimpleInfo.bin", 'r') as load_f:
-    contract_bin = load_f.read()
-    load_f.close()
-result = client.deploy(contract_bin)
-print("deploy",result)
-
-
-print("\n>>sendRawTransaction:---------------------------------------------------------------------")
-to_address = result['contractAddress'] #use new deploy address
-args = ['simplename', 2024, to_checksum_address('0x7029c502b4F824d19Bd7921E9cb74Ef92392FB1c')]
-result = client.sendRawTransactionGetReceipt(to_address,contract_abi,"set",args)
-print(result)
-logresult = abimaven.parse_event_logs(result["logs"])
-print("parse log ")
-for log in logresult:
-    if 'eventname' in log:
-        print("log name: {} , data: {}".format(log['eventname'],log['eventdata']))
-
-txhash = result['transactionHash']
-txresponse = client.getTransactionByHash(txhash)
-inputresult = abimaven.parse_transaction_input(txresponse['input'])
-print("transaction input parse:",txhash)
-print(inputresult)
-
-
-
-print("\n>>Call:---------------------------------------------------------------------")
-
-res = client.call(to_address,contract_abi,"getbalance")
-print("call",res)
-

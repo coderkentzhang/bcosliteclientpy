@@ -4,27 +4,27 @@ from datatypes.datatype_parser import DatatypeParser
 import json
 
 if(True):
-    abimaven = DatatypeParser()
-    abimaven.load_abi_file("sample/SimpleInfo.abi")
-    abimaven.parse_abi()
+    parser = DatatypeParser()
+    parser.load_abi_file("sample/SimpleInfo.abi")
+    parser.parse_abi()
 
     with open("sample/receipt.json","r") as f :
         receipt = json.load(f)
         f.close()
     logs = receipt["logs"]
-    abimaven.parse_event_logs(logs)
+    parser.parse_event_logs(logs)
     print("parse result")
     for log in logs:
         print(log)
-    result = abimaven.parse_receipt_output("set",receipt['output'])
+    result = parser.parse_receipt_output("set",receipt['output'])
     print("output :",result)
 
 if True:
-    abimaven = DatatypeParser()
-    abimaven.load_abi_file("sample/SimpleInfo.abi")
-    abimaven.parse_abi()
+    parser = DatatypeParser()
+    parser.load_abi_file("sample/SimpleInfo.abi")
+    parser.parse_abi()
     with open("sample/tx_simpleinfo_set.json","r") as f :
         tx = json.load(f)
         f.close()
-    result = abimaven.parse_transaction_input(tx["input"])
+    result = parser.parse_transaction_input(tx["input"])
     print(result)
