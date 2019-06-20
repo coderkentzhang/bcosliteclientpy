@@ -113,6 +113,6 @@ parse_event_logs：用于receipt，解析eventlog数组，增加eventname，even
 
 
 
-此项目源自开源，回馈开源，其中eth-abi，eth-account，eth-hash，eth-keys，eth-typing，eth-utils，rlp, eth-rlp等都为开源项目，保留了license,README，向原作者（们）致谢
+此项目源自开源，回馈开源，其中eth-abi，eth-account，eth-hash，eth-keys，eth-typing，eth-utils，rlp, eth-rlp等都为开源项目，各子目录都保留了license,README，向原作者（们）致谢
 
 以上代码有部分修订，为了便于修改，所以将这些项目并入代码目录，不采用源码包的方式引用。
