@@ -93,13 +93,13 @@ clientdemo.py演示调用client/bcosclient.py里实现的接口，已经实现fi
 
 实现的发送交易接口为：
 
-deploy：部署合约
+    deploy：部署合约
 
-call： 调用合约接口，返回只读的数据
+    call： 调用合约接口，返回只读的数据
 
-sendRawTransaction：返回transactionHash
+    sendRawTransaction：返回transactionHash
 
-sendRawTransactionGetReceipt : 发送交易后等待共识完成，检索receipt，
+    sendRawTransactionGetReceipt : 发送交易后等待共识完成，检索receipt，
 
 sendRawTransaction这两个方法可用于所有已知abi的合约，传入abi定义，方法名，正确的参数列表，即可发送交易。交易由BcosClient里加载的账号进行签名。
 
@@ -109,11 +109,11 @@ sendRawTransaction这两个方法可用于所有已知abi的合约，传入abi�
 
 主要方法有：
 
-parse_transaction_input: 用于transaction，用于查询交易后解析input数据（方法+参数）
+    parse_transaction_input: 用于transaction，用于查询交易后解析input数据（方法+参数）
 
-parse_receipt_output： 用于receipt，解析合约接口的返回值
+    parse_receipt_output： 用于receipt，解析合约接口的返回值
 
-parse_event_logs：用于receipt，解析eventlog数组，增加eventname，eventdata两个数据
+    parse_event_logs：用于receipt，解析eventlog数组，增加eventname，eventdata两个数据
 
 
 
