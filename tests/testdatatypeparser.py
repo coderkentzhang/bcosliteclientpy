@@ -16,6 +16,8 @@ if(True):
     print("parse result")
     for log in logs:
         print(log)
+    result = abimaven.parse_receipt_output("set",receipt['output'])
+    print("output :",result)
 
 if True:
     abimaven = DatatypeParser()
