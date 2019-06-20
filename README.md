@@ -4,7 +4,7 @@
 
 linux环境准备：
 
-安装和使用，参见本目录下的 ./linux_python_setup.md
+安装和使用，参见本目录下的 [linux_python_setup.md](./linux_python_setup.md)
 
 熟悉pyenv和virutalenv的话应该比较顺利，也可以直接安装python3。强烈推荐多环境python设定。
 
