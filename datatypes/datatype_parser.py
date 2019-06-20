@@ -84,9 +84,9 @@ class DatatypeParser:
             if(eventabi == None):
                 continue
             #args_abi = get_fn_abi_types(eventabi,'inputs')
-            argslist = exclude_indexed_event_inputs_to_array(eventabi)
+            argslist = exclude_indexed_event_inputs_to_str(eventabi)
             #print(argslist)
-            result = decode_abi(argslist,decode_hex(log['data']))
+            result = decode_single(argslist,decode_hex(log['data']))
             #print(result)
             log["eventdata"] = result
             log["eventname"] = eventabi["name"]
@@ -99,8 +99,8 @@ class DatatypeParser:
             return None
         func_abi = self.func_abi_map_by_selector[selector]
         #print(func_abi)
-        args_abi = get_fn_abi_types(func_abi,"inputs")
-        args = decode_abi(args_abi,decode_hex(argsdata) )
+        args_abi = get_fn_abi_types_str(func_abi,"inputs")
+        args = decode_single(args_abi,decode_hex(argsdata) )
         result= dict()
         result['name'] = func_abi["name"]
         result['args'] = args
@@ -110,9 +110,9 @@ class DatatypeParser:
         if name not in self.func_abi_map_by_name:
             return None
         func_abi = self.func_abi_map_by_name[name]
-        output_args = get_fn_abi_types(func_abi,"outputs")
+        output_args = get_fn_abi_types_str(func_abi,"outputs")
         #print(output_args)
-        result = decode_abi(output_args,decode_hex(outputdata) )
+        result = decode_single(output_args,decode_hex(outputdata) )
         return result
 
 
