@@ -1,7 +1,28 @@
 本项目用于和开源的金融级区块链底层平台FISCO BCOS( https://www.github.com/fisco-bcos/ ) 建立JSONRPC协议的通信。支持版本为FISCO BCOS 2.0 RC1~RC3以及后续版本。
 
-windows环境准备：
+已经适配的python版本:python3.7.3
 
+linux环境准备：
+
+安装和使用，参见本目录下的 ./linux_python_setup.md
+
+熟悉pyenv和virutalenv的话应该比较顺利，也可以直接安装python3。强烈推荐多环境python设定。
+
+安装pyenv和virtualenv完成后，参考命令：
+
+	pyenv install 3.7.3 -v 
+
+	pyenv rehash 
+
+	pyenv virtualenv 3.7.3 blc
+	
+	pyenv activate blc
+
+进入名为pytho 3.7.3 , blc的开发运行环境（blc这个名可替换）
+
+----------------------------------------------------------------------------
+
+windows环境准备：
 
 1.安装python3.7.3 https://www.python.org/
 
@@ -11,7 +32,6 @@ windows环境准备：
 
 1.安装命令：pip install virtualenv
 
-
 2.建立一个工作目录，如d:\python_env,进入d:\python_env
 
 3.创建一个独立的python环境: virtualenv blc  ("blc"为环境名，可用其他名字)
@@ -20,15 +40,21 @@ windows环境准备：
 
 可以看到命令行前面多了（blc），独立的名为blc的python环境建立完成
 
-获取代码：
+----------------------------------------------------------------------------
+
+
+获取项目代码：
 
 	git clone https://github.com/coderkentzhang/bcosliteclientpy.git
 	
 目前代码在dev分支,建议在dev状态下运行体验，进行二次开发。
 
 依次运行：
+
 	git checkout dev
+	
 	cd bcosliteclient
+	
 	pip install -e .[dev]
 
 安装依赖库(依赖库定义见setup.py文件)。
@@ -36,11 +62,17 @@ windows环境准备：
 将client_config.py.template复制为client_config.py，或者直接将template后缀去掉。修改client_config.py里的值：
 
     remote_rpcurl="http://127.0.0.1:8545" #节点的rpc端口
+	
     contract_info_file="bin/accounts/contract.ini" #保存已部署合约信息的文件
+	
     account_keyfile_path="bin/accounts" #默认保存keystore文件的路径，在此路径下,keystore文件以 [name].keystore命名
+	
     account_keyfile ="pyaccount.keystore" #默认的账号文件，用于交易签名
+	
     account_password ="123456" #默认的账号文件的密码*使用时建议另外创建
+	
     fiscoChainId=1
+	
     groupid = 1
 	
 修改配置后，运行体验
@@ -51,6 +83,7 @@ clientdemo.py会加载默认演示合约sample/SimpleInfo.sol以及其abi,bin，
 
 ***如报告Crypto包不存在，进入virtualenv的目录如d:\python_env\blc\lib\site-packages\,将小写的crypto目录名第一个字母改为大写Crypto （这貌似是windows环境的一个坑 ***
 
+----------------------------------------------------------------------------
 
 clientdemo.py演示调用client/bcosclient.py里实现的接口，已经实现fisco bcos的所有rpc查询接口（截止2019.06 FISCO BCOS 2.0rc3版本）
 
@@ -81,4 +114,5 @@ parse_event_logs：用于receipt，解析eventlog数组，增加eventname，even
 
 
 此项目源自开源，回馈开源，其中eth-abi，eth-account，eth-hash，eth-keys，eth-typing，eth-utils，rlp, eth-rlp等都为开源项目，保留了license,README，向原作者（们）致谢
+
 以上代码有部分修订，为了便于修改，所以将这些项目并入代码目录，不采用源码包的方式引用。
