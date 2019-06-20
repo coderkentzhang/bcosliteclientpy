@@ -1,5 +1,9 @@
 本项目用于和开源的金融级区块链底层平台FISCO BCOS( https://www.github.com/fisco-bcos/ ) 建立JSONRPC协议的通信。支持版本为FISCO BCOS 2.0 RC1~RC3以及后续版本。
 
+意图是构建一个代码尽量少，逻辑尽情轻，层级尽量浅，容易理解，可快速复用二次开发的python语言的客户端，所以命名内嵌了"lite"。
+
+支持所有fisco bcos2.0 JSON RPC 接口，支持交易输入输出，event log等绝大部分的abi数据拼装和解析，支持简单的keystore账户管理，支持部署合约后保存最新地址和记录部署历史。
+
 已经适配的python版本:python3.7.3
 
 linux环境准备：
@@ -115,4 +119,4 @@ parse_event_logs：用于receipt，解析eventlog数组，增加eventname，even
 
 此项目源自开源，回馈开源，其中eth-abi，eth-account，eth-hash，eth-keys，eth-typing，eth-utils，rlp, eth-rlp等都为开源项目，各子目录都保留了license,README，向原作者（们）致谢
 
-以上代码有部分修订，为了便于修改，所以将这些项目并入代码目录，不采用源码包的方式引用。
+以上代码有部分修订，为了便于修改，所以将这些项目并入代码目录，不采用发布包的方式引用。
