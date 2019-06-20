@@ -271,6 +271,9 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"getClientVersion","params":[],"i
         return decoderesult
 
     # https://fisco-bcos-documentation.readthedocs.io/zh_CN/release-2.0/docs/api.html#getpendingtransactions
+    '''
+        可用于所有已知abi的合约，传入abi定义，方法名，正确的参数列表，即可发送交易。交易由BcosClient里加载的账号进行签名。
+    '''
     def sendRawTransaction(self,to_address,contract_abi,fn_name,args=None,bin_data=None):
         cmd = "sendRawTransaction"
         # 第三个参数是方法的abi，可以传入None，encode_transaction_data做了修改，支持通过方法+参数在整个abi里找到对应的方法abi来编码
@@ -313,6 +316,8 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"getClientVersion","params":[],"i
         result = self.common_request(cmd,params)
         return result
 
+
+    #发送交易后等待共识完成，检索receipt
     def sendRawTransactionGetReceipt(self, to_address, contract_abi, fn_name, args=None, bin_data=None,timeout=15):
         txid = self.sendRawTransaction(to_address,contract_abi,fn_name,args,bin_data)
         import time

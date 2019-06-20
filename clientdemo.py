@@ -35,15 +35,22 @@ client.save_contract_address(contract_name,result["contractAddress"],int(result[
 print("\n>>sendRawTransaction:----------------------------------------------------------")
 to_address = result['contractAddress'] #use new deploy address
 args = ['simplename', 2024, to_checksum_address('0x7029c502b4F824d19Bd7921E9cb74Ef92392FB1c')]
+
 receipt = client.sendRawTransactionGetReceipt(to_address,contract_abi,"set",args)
-print(receipt)
+print("receipt:",receipt)
+
 #解析receipt里的log
+print("\n>>parse receipt and transaction:----------------------------------------------------------")
+txhash = receipt['transactionHash']
+print("transaction hash: " ,txhash)
 logresult = abi_parser.parse_event_logs(receipt["logs"])
+i = 0
 for log in logresult:
     if 'eventname' in log:
-        print("log name: {} , data: {}".format(log['eventname'],log['eventdata']))
+        i = i + 1
+        print("{}): log name: {} , data: {}".format(i,log['eventname'],log['eventdata']))
 #获取对应的交易数据，解析出调用方法名和参数
-txhash = receipt['transactionHash']
+
 txresponse = client.getTransactionByHash(txhash)
 inputresult = abi_parser.parse_transaction_input(txresponse['input'])
 print("transaction input parse:",txhash)

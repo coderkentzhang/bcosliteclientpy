@@ -71,6 +71,7 @@ class DatatypeParser:
             #print(encode_hex(topic) )
             self.event_abi_map[encode_hex(topic)] = event
 
+    #用于receipt，解析eventlog数组，在原数据中增加解析后的 eventname，eventdata两个数据
     def parse_event_logs(self,logs):
         #print(self.event_abi_map)
         for log in logs:
@@ -92,6 +93,8 @@ class DatatypeParser:
             log["eventname"] = eventabi["name"]
         return logs
 
+    #用于transaction，用于查询交易后解析input数据（方法+参数）
+    #返回 result['name'] result['args']
     def parse_transaction_input(self,inputdata):
         selector = inputdata[0:10]
         argsdata = inputdata[10:]
@@ -106,6 +109,8 @@ class DatatypeParser:
         result['args'] = args
         return result
 
+    # 用于receipt，解析合约接口的返回值
+    # 取决于接口定义
     def parse_receipt_output(self,name,outputdata):
         if name not in self.func_abi_map_by_name:
             return None
