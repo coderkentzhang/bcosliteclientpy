@@ -118,11 +118,11 @@ console.py 控制台小程序
 	**importance: for args, use '' for str or address ,eg: 'test','0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
 
 
-	5): all the 'get' command for JSON RPC
+	5): input any 'getXXX' command for JSON RPC
 	eg: [getBlockyByNumber 10].
 	use 'list' cmd to show all getcmds
 
-	6): list: list all getcmds
+	6): list: list all getcmds (getBlock...getTransaction...getReceipt..getOthers)
 
 	7): int [hexnum]: convert a hex str to int ,eg: int 0x65
 
