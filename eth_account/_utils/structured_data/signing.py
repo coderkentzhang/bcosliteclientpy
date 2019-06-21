@@ -6,7 +6,7 @@ from eth_utils import (
     to_int,
 )
 
-from datatypes.bcostransactions import (
+from client.bcostransactions import (
     ChainAwareUnsignedTransaction,
     BcosUnsignedTransaction,
     encode_transaction,

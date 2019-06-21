@@ -4,9 +4,8 @@ from client.bcosclient import (
 )
 import os
 from eth_utils import to_checksum_address
-from  datatypes import datatype_parser
-from  datatypes.datatype_parser import DatatypeParser
-import json
+from client.datatype_parser import DatatypeParser
+
 client = BcosClient()
 info = client.init()
 print(info)

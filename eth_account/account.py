@@ -41,7 +41,7 @@ from eth_account._utils.structured_data.signing import (
     to_standard_signature_bytes,
     to_standard_v,
 )
-from datatypes.transactions import (
+from client.transactions import (
     Transaction,
     vrs_from,
 )

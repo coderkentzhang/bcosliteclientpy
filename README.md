@@ -101,7 +101,7 @@ console.py 控制台小程序
 	usage of console (FISCO BCOS 2.0 lite client @python):
 
 	1): newaccount [name] [password] :
-	create a new account ,save to :[bin/accounts]
+	create a new account ,save to :[bin/accounts] (default) or the path spec in client_config.py:[account_keyfile_path]
 
 	2): deploy [abi binary file]
 	deploy contract from a binary file

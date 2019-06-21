@@ -5,14 +5,13 @@ from client_config import client_config
 from eth_account.account import (
     Account
 )
-from eth_utils.hexadecimal import decode_hex,encode_hex
+from eth_utils.hexadecimal import encode_hex
 from client.bcosclient import (
-    BcosClient,
-    BcosError
+    BcosClient
 )
 import json
 import os
-from  datatypes.datatype_parser import DatatypeParser
+from client.datatype_parser import DatatypeParser
 
 parser = argparse.ArgumentParser(description='FISCO BCOS 2.0 lite client @python')   # 首先创建一个ArgumentParser对象
 parser.add_argument('cmd',    nargs="+" ,       # 添加参数

@@ -1,5 +1,4 @@
-from datatypes import datatype_parser
-from datatypes.datatype_parser import DatatypeParser
+from client.datatype_parser import DatatypeParser
 
 import json
 
