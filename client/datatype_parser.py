@@ -110,6 +110,7 @@ class DatatypeParser:
         result= dict()
         result['name'] = func_abi["name"]
         result['args'] = args
+        result['signature'] = abi_to_signature(func_abi)
         return result
 
     # 用于receipt，解析合约接口的返回值
@@ -125,3 +126,8 @@ class DatatypeParser:
 
 
 
+    def get_func_signature(self,name):
+        if(name not in self.func_abi_map_by_name):
+            return None
+        abi = self.func_abi_map_by_name[name]
+        return abi_to_signature(name)

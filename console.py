@@ -12,6 +12,7 @@ from client.bcosclient import (
 import json
 import os
 from client.datatype_parser import DatatypeParser
+from eth_utils import to_checksum_address
 
 parser = argparse.ArgumentParser(description='FISCO BCOS 2.0 lite client @python')   # 首先创建一个ArgumentParser对象
 parser.add_argument('cmd',    nargs="+" ,       # 添加参数
@@ -81,8 +82,13 @@ def format_args_by_abi(inputparams,inputabi):
         if "int" in input["type"]:
             paramformatted.append(int(param,10))
             continue
+        #print(input)
+        if "address" in input["type"]:
+            print ("to checksum address ",param)
+            paramformatted.append(to_checksum_address(param))
+            continue
         paramformatted.append(param)
-    print("paramformatted:",paramformatted)
+    print("param formatted by abi:",paramformatted)
     return paramformatted
 
 def format_args_by_types(inputparams,types):
@@ -188,8 +194,8 @@ if cmd=="sendtx":
     print_receipt_logs(receipt,data_parser)
     txresponse = client.getTransactionByHash(txhash)
     inputresult = data_parser.parse_transaction_input(txresponse['input'])
-    print("transaction input parse:",txhash)
-    print(inputresult)
+    print("transaction hash is :",txhash)
+    print("input data parse:\n",inputresult)
 
     #解析该交易在receipt里输出的output,即交易调用的方法的return值
     outputresult  = data_parser.parse_receipt_output(inputresult['name'], receipt['output'])
@@ -254,9 +260,10 @@ if cmd in getcmds:
             parser = DatatypeParser()
             parser.load_abi_file(inputparams[1])
             inputdata = result["input"]
-            result = parser.parse_transaction_input(inputdata)
+            inputresult  = parser.parse_transaction_input(inputdata)
             print("\nabifile : ", inputparams[1])
-            print("transaction input parse result:\n {}".format(result))
+            print("transaction hash :" ,result["hash"])
+            print("input data parse:\n {}".format(inputresult ))
 
 
 usagemsg.append("list: list all getcmds (getBlock...getTransaction...getReceipt..getOthers)")
@@ -290,7 +297,7 @@ usagemsg.append('''checkaddr [address]: change address to checksum address accor
 to_checksum_address: 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc -> 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
 ''')
 if cmd == "checkaddr":
-    from eth_utils import  to_checksum_address
+
     address = inputparams[0]
     result = to_checksum_address(address)
     print("to_checksum_address:")
