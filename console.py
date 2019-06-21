@@ -1,6 +1,7 @@
 #!python
 import argparse
 import sys
+import time
 from configobj import ConfigObj
 from client_config import client_config
 from eth_account.account import (
@@ -32,7 +33,10 @@ if cmd == 'newaccount' :
     print ("starting : {} {} {} ".format(name,name,password))
     ac = Account.create(password)
     print("new address : ",ac.address)
+    a= time.time()
     kf = Account.encrypt(ac.privateKey, password)
+    b=time.time()
+    print("encrypt use time : {}s".format((b - a)))
     import json
     keyfile = "{}/{}.keystore".format(client_config.account_keyfile_path,name)
     print("save to file : [{}]".format(keyfile) )
@@ -41,7 +45,10 @@ if cmd == 'newaccount' :
 
     with open(keyfile, "r") as dump_f:
         keytext = json.load(dump_f)
+        a = time.time()
         privkey = Account.decrypt(keytext,password)
+        b = time.time()
+        print("decrypt use time : {}s".format((b-a)))
         ac2 = Account.from_key(privkey)
         print("-------------->>")
 
@@ -285,8 +292,12 @@ if cmd in getcmds:
         print(">> blockhash   : ", result["hash"])
     if "getTransactionBy" in cmd :
         #print(inputparams)
-        if len(inputparams) == 2:
+        abifile=None
+        if len(inputparams) == 3:
+            abifile = inputparams[2]
+        if len(inputparams) == 2 and cmd == "getTransactionByHash":
             abifile = inputparams[1]
+        if abifile!=None:
             print_parse_transaction(result,abifile)
 
 

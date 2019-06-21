@@ -87,7 +87,7 @@ class BcosClient:
             data = None
             if("data" in response["error"]):
                 data = response["error"]["data"]
-            self.logger.error("is_error_reponse ",e)
+            self.logger.error("is_error_reponse code: {}, msg:{} ,data:{}".format(code,msg,data) )
             raise BcosError(code,data,msg)
         return None
 
