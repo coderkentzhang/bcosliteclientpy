@@ -10,7 +10,7 @@ linux环境准备：
 
 安装和使用，参见本目录下的 [linux_python_setup.md](./linux_python_setup.md)
 
-熟悉pyenv和virutalenv的话应该比较顺利，也可以直接安装python3。强烈推荐多环境python设定。
+熟悉pyenv和virtualenv的话应该比较顺利，也可以直接安装python3。强烈推荐多环境python设定。
 
 安装pyenv和virtualenv完成后，参考命令：
 
@@ -88,6 +88,56 @@ clientdemo.py会加载默认演示合约sample/SimpleInfo.sol以及其abi,bin，
 ***如报告Crypto包不存在，进入virtualenv的目录如d:\python_env\blc\lib\site-packages\,将小写的crypto目录名第一个字母改为大写Crypto （这貌似是windows环境的一个坑 ***
 
 ----------------------------------------------------------------------------
+
+1-->
+
+console.py 控制台小程序
+
+使用 python console.py usage 查看已经实现的命令，包括创建帐号，delploy/call/sendtx，JSON RPC查询接口等
+
+usage of console:
+
+1): newaccount [name] [password] :
+
+create a new account ,save to :[bin/accounts]
+
+2): deploy [abi binary file]
+
+deploy contract from a binary file
+
+3): call [contractname] [address] [func]  [args...]
+
+eg: call SimpleInfo 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc getbalance1 11
+
+if address is "ini" ,then load address from :bin/contract.ini
+
+**importance: for args, use '' for str or address ,eg: 'test','0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc'
+
+
+4): sendtx [contractname]  [address] [func] [args...]
+
+eg: sendtx SimpleInfo 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc set "test" 100 "0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc"
+
+if address is "ini" ,then load address from :bin/contract.ini
+
+**importance: for args, use '' for str or address ,eg: 'test','0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc'
+
+
+5): all the 'get' command for JSON RPC
+
+eg: [getBlockyByNumber 10] use 'list' cmd to show all getcmds
+
+6): list: list all getcmds
+
+7): int : convert a hex str to int ,eg: int 0x65
+
+8): txinput [abifile] [inputdata(in hexstr)]  
+
+parse the transaction input data by spec abifile，eg: txinput sample/SimpleInfo.abi [txinputdata]
+
+
+
+2-->
 
 clientdemo.py演示调用client/bcosclient.py里实现的接口，已经实现fisco bcos的所有rpc查询接口（截止2019.06 FISCO BCOS 2.0rc3版本）
 

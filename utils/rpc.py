@@ -45,7 +45,7 @@ class JSONBaseProvider():
         try:
             response = self.make_request('getClientVersion', [])
 
-            print(response["result"])
+            #print(response["result"])
         except IOError:
             return False
 

@@ -43,7 +43,7 @@ class BcosClient:
     groupid = None
 
     def __init__(self):
-        pass
+        self.init()
 
     def init(self):
         #load the account from keyfile
@@ -85,6 +85,7 @@ class BcosClient:
         return None
 
     def common_request(self,cmd,params):
+
         response = self.rpc.make_request(cmd, params)
         self.is_error_reponse(response)
         return response["result"]
@@ -299,7 +300,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"getClientVersion","params":[],"i
         txmap["groupId"] = self.groupid
         txmap["extraData"] = ""
         # txmap["chainId"]=None #chainId没用了，fiscoChainId有用
-        print(txmap)
+        #print(txmap)
         '''
         from datatypes.bcostransactions import (
             serializable_unsigned_transaction_from_dict,
@@ -319,6 +320,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"getClientVersion","params":[],"i
 
     #发送交易后等待共识完成，检索receipt
     def sendRawTransactionGetReceipt(self, to_address, contract_abi, fn_name, args=None, bin_data=None,timeout=15):
+        #print("sendRawTransactionGetReceipt",args)
         txid = self.sendRawTransaction(to_address,contract_abi,fn_name,args,bin_data)
         import time
         for i in range(0, timeout):

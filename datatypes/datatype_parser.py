@@ -41,6 +41,7 @@ class DatatypeParser:
         self.parse_abi()
 
     def load_abi_file(self,abi_file):
+
         with open(abi_file, 'r') as load_f:
             self.contract_abi = json.load(load_f)
             load_f.close()
@@ -98,6 +99,8 @@ class DatatypeParser:
     def parse_transaction_input(self,inputdata):
         selector = inputdata[0:10]
         argsdata = inputdata[10:]
+        #print(selector)
+        #print(self.func_abi_map_by_selector.keys())
         if selector not in self.func_abi_map_by_selector:
             return None
         func_abi = self.func_abi_map_by_selector[selector]

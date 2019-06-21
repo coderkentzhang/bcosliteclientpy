@@ -13,10 +13,10 @@ print(info)
 
 
 #从文件加载abi定义
-contractFile  ="sample/SimpleInfo.abi"
-abi_parser = DatatypeParser()
-abi_parser.load_abi_file(contractFile)
-contract_abi = abi_parser.contract_abi
+abi_file  ="sample/SimpleInfo.abi"
+data_parser = DatatypeParser()
+data_parser.load_abi_file(abi_file)
+contract_abi = data_parser.contract_abi
 
 #部署合约
 print("\n>>Deploy:---------------------------------------------------------------------")
@@ -26,7 +26,7 @@ with open("sample/SimpleInfo.bin", 'r') as load_f:
 result = client.deploy(contract_bin)
 print("deploy",result)
 print("new address : ",result["contractAddress"])
-contract_name = contractname = os.path.splitext(os.path.basename(contractFile))[0]
+contract_name =  os.path.splitext(os.path.basename(abi_file))[0]
 memo = "tx:"+result["transactionHash"]
 #把部署结果存入文件备查
 client.save_contract_address(contract_name,result["contractAddress"],int(result["blockNumber"],16),memo)
@@ -43,7 +43,7 @@ print("receipt:",receipt)
 print("\n>>parse receipt and transaction:----------------------------------------------------------")
 txhash = receipt['transactionHash']
 print("transaction hash: " ,txhash)
-logresult = abi_parser.parse_event_logs(receipt["logs"])
+logresult = data_parser.parse_event_logs(receipt["logs"])
 i = 0
 for log in logresult:
     if 'eventname' in log:
@@ -52,12 +52,12 @@ for log in logresult:
 #获取对应的交易数据，解析出调用方法名和参数
 
 txresponse = client.getTransactionByHash(txhash)
-inputresult = abi_parser.parse_transaction_input(txresponse['input'])
+inputresult = data_parser.parse_transaction_input(txresponse['input'])
 print("transaction input parse:",txhash)
 print(inputresult)
 
 #解析该交易在receipt里输出的output,即交易调用的方法的return值
-outputresult  = abi_parser.parse_receipt_output(inputresult['name'], receipt['output'])
+outputresult  = data_parser.parse_receipt_output(inputresult['name'], receipt['output'])
 print("receipt output :",outputresult)
 
 

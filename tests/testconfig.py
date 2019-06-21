@@ -14,8 +14,7 @@ print(config['address']  )
 print(config['address']['SimpleInfo'])
 print(config['address']['testnode'])
 
-count = config['params']['counter']
-print(count +2000)
+
 
 del config['address']['testnode']
 config.write()

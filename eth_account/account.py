@@ -188,13 +188,13 @@ class Account(object):
              >>> with open('my-keyfile', 'w') as f:
                  f.write(json.dumps(encrypted))
         """
-        print(private_key)
+        # print(private_key)
         if isinstance(private_key, keys.PrivateKey):
             key_bytes = private_key.to_bytes()
-            print("private_key:to_bytes",len(private_key))
+         #   print("private_key:to_bytes",len(private_key))
         else:
             key_bytes = HexBytes(private_key)
-            print("private_key:HexBytes", len(private_key))
+        #    print("private_key:HexBytes", len(private_key))
 
         if kdf is None:
             kdf = cls._default_kdf
