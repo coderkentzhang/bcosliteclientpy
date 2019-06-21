@@ -1,4 +1,4 @@
-本项目用于和开源的金融级区块链底层平台FISCO BCOS( https://www.github.com/fisco-bcos/ ) 建立JSONRPC协议的通信。支持版本为FISCO BCOS 2.0 RC1~RC3以及后续版本。
+本项目采用Python开发，用于和开源的金融级区块链底层平台FISCO BCOS( https://www.github.com/fisco-bcos/ ) 建立JSONRPC协议的通信。支持版本为FISCO BCOS 2.0 RC1~RC3以及后续版本。
 
 意图是构建一个代码尽量少，逻辑尽情轻，层级尽量浅，容易理解，可快速复用二次开发的python语言的客户端，所以命名内嵌了"lite"。
 
@@ -57,15 +57,15 @@ windows环境准备：
 
 	git checkout dev
 	
-	cd bcosliteclient
+	cd bcosliteclientpy
 	
 	pip install -e .[dev]
 
 安装依赖库(依赖库定义见setup.py文件)。
 
-将client_config.py.template复制为client_config.py，或者直接将template后缀去掉。修改client_config.py里的值：
+修改配置文件。将client_config.py.template复制为client_config.py，或者直接将template后缀去掉。修改client_config.py里的值：
 
-    remote_rpcurl="http://127.0.0.1:8545" #节点的rpc端口
+    remote_rpcurl="http://127.0.0.1:8545" #节点的rpc端口，和要通信的节点*必须*一致
 	
     contract_info_file="bin/accounts/contract.ini" #保存已部署合约信息的文件
 	
@@ -73,11 +73,11 @@ windows环境准备：
 	
     account_keyfile ="pyaccount.keystore" #默认的账号文件，用于交易签名
 	
-    account_password ="123456" #默认的账号文件的密码*使用时建议另外创建
+    account_password ="123456" #默认的账号文件的密码*实际使用时建议改为复杂密码
 	
-    fiscoChainId=1
+    fiscoChainId=1 #链ID
 	
-    groupid = 1
+    groupid = 1 #群组ID，和要通信的节点*必须*一致，如和其他群组通信，修改这一项，或者设置bcosclient.py里对应的成员变量
 	
 修改配置后，运行体验
 
@@ -89,57 +89,57 @@ clientdemo.py会加载默认演示合约sample/SimpleInfo.sol以及其abi,bin，
 
 ----------------------------------------------------------------------------
 
-1-->
+1 可执行模块-->
 
 console.py 控制台小程序
 
 使用 python console.py usage 查看已经实现的命令，包括创建帐号，delploy/call/sendtx，JSON RPC查询接口等
 
-usage of console:
+	usage of console:
 
-1): newaccount [name] [password] :
+	1): newaccount [name] [password] :
 
-create a new account ,save to :[bin/accounts]
+	create a new account ,save to :[bin/accounts]
 
-2): deploy [abi binary file]
+	2): deploy [abi binary file]
 
-deploy contract from a binary file
+	deploy contract from a binary file
 
-3): call [contractname] [address] [func]  [args...]
+	3): call [contractname] [address] [func]  [args...]
 
-eg: call SimpleInfo 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc getbalance1 11
+	eg: call SimpleInfo 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc getbalance1 11
 
-if address is "ini" ,then load address from :bin/contract.ini
+	if address is "ini" ,then load address from :bin/contract.ini
 
-**importance: for args, use '' for str or address ,eg: 'test','0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc'
-
-
-4): sendtx [contractname]  [address] [func] [args...]
-
-eg: sendtx SimpleInfo 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc set "test" 100 "0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc"
-
-if address is "ini" ,then load address from :bin/contract.ini
-
-**importance: for args, use '' for str or address ,eg: 'test','0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc'
+	**importance: for args, use '' for str or address ,eg: 'test','0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc'
 
 
-5): all the 'get' command for JSON RPC
+	4): sendtx [contractname]  [address] [func] [args...]
 
-eg: [getBlockyByNumber 10] use 'list' cmd to show all getcmds
+	eg: sendtx SimpleInfo 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc set "test" 100 "0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc"
 
-6): list: list all getcmds
+	if address is "ini" ,then load address from :bin/contract.ini
 
-7): int : convert a hex str to int ,eg: int 0x65
-
-8): txinput [abifile] [inputdata(in hexstr)]  
-
-parse the transaction input data by spec abifile，eg: txinput sample/SimpleInfo.abi [txinputdata]
+	**importance: for args, use '' for str or address ,eg: 'test','0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc'
 
 
+	5): all the 'get' command for JSON RPC
 
-2-->
+	eg: [getBlockyByNumber 10] use 'list' cmd to show all getcmds
 
-clientdemo.py演示调用client/bcosclient.py里实现的接口，已经实现fisco bcos的所有rpc查询接口（截止2019.06 FISCO BCOS 2.0rc3版本）
+	6): list: list all getcmds
+
+	7): int : convert a hex str to int ,eg: int 0x65
+
+	8): txinput [abifile] [inputdata(in hexstr)]  
+
+	parse the transaction input data by spec abifile，eg: txinput sample/SimpleInfo.abi [txinputdata]
+
+
+
+2 可执行模块-->
+
+clientdemo.py演示调用client/bcosclient.py里实现的接口，已经实现FISCO BCOS2.0的所有rpc查询接口（截止2019.06 FISCO BCOS 2.0rc3版本）
 
 实现的发送交易接口为：
 
@@ -153,6 +153,7 @@ clientdemo.py演示调用client/bcosclient.py里实现的接口，已经实现fi
 
 sendRawTransaction这两个方法可用于所有已知abi的合约，传入abi定义，方法名，正确的参数列表，即可发送交易。交易由BcosClient里加载的账号进行签名。
 
+----------------------------------------------------------------------------
 
 解析数据采用datatypes/datatypeparse.py里实现的DatatypeParser对象的方法。
 
@@ -165,7 +166,7 @@ sendRawTransaction这两个方法可用于所有已知abi的合约，传入abi�
 
     parse_event_logs：用于receipt，解析eventlog数组，增加eventname，eventdata两个数据
 
-
+----------------------------------------------------------------------------
 
 此项目源自开源，回馈开源，其中eth-abi，eth-account，eth-hash，eth-keys，eth-typing，eth-utils，rlp, eth-rlp等都为开源项目，各子目录都保留了license,README，向原作者（们）致谢！
 (是的，兼容evm，复用了abi/rlp编码，但底层项目实际上整个架构已经重写)
@@ -174,4 +175,4 @@ sendRawTransaction这两个方法可用于所有已知abi的合约，传入abi�
 以上引用的代码有修订，为了便于修改，所以将这些项目并入代码目录，不采用发布包的方式引用。
 
 
-本工程从开始准备到本文档完成历时五天，在工作之余的碎片时间和深夜完成，感谢开源社区既有代码的基础以及python语言的开发效率,所写代码不多，主要是发掘可用api和进行整理、重构、胶水式组合封装(准备和整理环境的时间，简直比写关键代码耗时还长:P)。欢迎体验和pr,一起持续更新维护。
+本工程从开始准备到本文档完成历时五天，在工作之余的碎片时间和深夜完成，得益于开源社区既有代码的基础以及python语言的开发效率,所写代码不多，主要是发掘可用api和进行整理、重构、胶水式组合封装(准备和整理环境的时间，简直比写关键代码耗时还长:P)。欢迎体验和pr,一起持续更新维护。
