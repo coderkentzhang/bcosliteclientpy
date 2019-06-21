@@ -67,28 +67,25 @@ def print_receipt_logs(receipt,parser):
             print("{}): log name: {} , data: {}".format(i, log['eventname'], log['eventdata']))
 
 
-def format_params(inputparams,tohex=False):
+def format_args_by_abi(inputparams,inputabi):
     paramformatted = []
-    for param in inputparams:
-        if param == "true":
-            paramformatted.append(True)
-            continue
-        if param == "false":
-            paramformatted.append(False)
-            continue
+    index=-1
+    #print(inputabi)
+    #print(inputparams)
+    for input in inputabi:
+        #print(input)
+        index +=1
+        param = inputparams[index]
         if '\'' in param:
-            print("str",param)
-            param = param.replace('\'','')
-            paramformatted.append(param)
+            param = param.replace('\'',"")
+        if "int" in input["type"]:
+            paramformatted.append(int(param,10))
             continue
-
-        value = int(param,10)
-        if tohex:
-            value = hex(int(param,10))
-        paramformatted.append(value)
+        paramformatted.append(param)
+    print("paramformatted:",paramformatted)
     return paramformatted
 
-def format_params_by_types(inputparams,types):
+def format_args_by_types(inputparams,types):
     index = -1;
     newparam=[]
     #print(types)
@@ -148,10 +145,12 @@ if cmd=="call":
     if address=="ini":
         config = ConfigObj(client_config.contract_info_file,encoding='UTF8')
         address = config["address"][params["contractname"]]
-    args = format_params(args)
+    funcname =params["func"]
+    inputabi = data_parser.func_abi_map_by_name[funcname]["inputs"]
+    args = format_args_by_abi(args,inputabi)
     print ("call {} , address: {}, func: {}, args:{}"
-           .format(params["contractname"],address,params["func"],args))
-    result = client.call(address,contract_abi,params["func"],args)
+           .format(params["contractname"],address,funcname,args))
+    result = client.call(address,contract_abi,funcname,args)
     print("call result: ",result )
 
 
@@ -172,11 +171,14 @@ if cmd=="sendtx":
     if address=="ini":
         config = ConfigObj(client_config.contract_info_file,encoding='UTF8')
         address = config["address"][params["contractname"]]
-    args = format_params(args)
-    from eth_utils import to_checksum_address
+    funcname = params["func"]
+   # print("data_parser.func_abi_map_by_name",data_parser.func_abi_map_by_name)
+    inputabi = data_parser.func_abi_map_by_name[funcname]["inputs"]
+    args = format_args_by_abi(args,inputabi)
+    #from eth_utils import to_checksum_address
     #args = ['simplename', 2024, to_checksum_address('0x7029c502b4F824d19Bd7921E9cb74Ef92392FB1c')]
     print ("sendtx {} , address: {}, func: {}, args:{}"
-           .format(params["contractname"],address,params["func"],args))
+           .format(params["contractname"],address,funcname,args))
     receipt = client.sendRawTransactionGetReceipt(address,contract_abi,params["func"],args)
     print("\n\nsendtx receipt: ",json.dumps(receipt,indent=4) )
     #解析receipt里的log
@@ -228,7 +230,7 @@ usagemsg.append('''all the 'get' command for JSON RPC\neg: [getBlockyByNumber 10
 use 'list' cmd to show all getcmds ''')
 if cmd in getcmds:
     types = getcmds[cmd]
-    fmtparams = format_params_by_types(inputparams, types)
+    fmtparams = format_args_by_types(inputparams, types)
     print("is a get :{},params:{}".format(cmd,fmtparams) )
     params = [client.groupid]
     params.extend(fmtparams)
@@ -247,7 +249,7 @@ if cmd in getcmds:
         print(">> blocknumber : ",blocknum)
         print(">> blockhash   : ", result["hash"])
     if "getTransaction" in cmd:
-        print(inputparams)
+        #print(inputparams)
         if len(inputparams) == 2:
             parser = DatatypeParser()
             parser.load_abi_file(inputparams[1])
