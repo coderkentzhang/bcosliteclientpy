@@ -28,7 +28,8 @@ print("new address : ",result["contractAddress"])
 contract_name =  os.path.splitext(os.path.basename(abi_file))[0]
 memo = "tx:"+result["transactionHash"]
 #把部署结果存入文件备查
-client.save_contract_address(contract_name,result["contractAddress"],int(result["blockNumber"],16),memo)
+from client.contractnote import ContractNote
+ContractNote.save_address(contract_name, result["contractAddress"], int(result["blockNumber"], 16), memo)
 
 #发送交易，调用一个改写数据的接口
 print("\n>>sendRawTransaction:----------------------------------------------------------")

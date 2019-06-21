@@ -57,7 +57,7 @@ class JSONBaseProvider():
 
 
 class HTTPProvider(JSONBaseProvider):
-    logger = logging.getLogger("web3.providers.HTTPProvider")
+    logger = logging.getLogger("client.providers.HTTPProvider")
     endpoint_uri = None
     _request_args = None
     _request_kwargs = None
@@ -88,10 +88,11 @@ class HTTPProvider(JSONBaseProvider):
         }
 
     def make_request(self, method, params):
-        self.logger.debug("Making request HTTP. URI: %s, Method: %s",
-                          self.endpoint_uri, method)
+
         request_data = self.encode_rpc_request(method, params)
         #print("request", request_data)
+        self.logger.debug("request: %s, %s,data: %s",
+                          self.endpoint_uri, method,request_data)
         raw_response = make_post_request(
             self.endpoint_uri,
             request_data,
@@ -99,7 +100,6 @@ class HTTPProvider(JSONBaseProvider):
         )
         #print("raw response ",raw_response)
         response = self.decode_rpc_response(raw_response)
-        self.logger.debug("Getting response HTTP. URI: %s, "
-                          "Method: %s, Response: %s",
-                          self.endpoint_uri, method, response)
+        self.logger.debug("GetResponse. %s, Response: %s",
+                           method, response)
         return response

@@ -98,6 +98,8 @@ console.py 控制台小程序
 
 **创建帐号后，如需要做为默认帐号使用，注意修改client_config.ini
 
+logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日志，默认级别为DEBUG
+
 	usage of console (FISCO BCOS 2.0 lite client @python):
 
 	1): newaccount [name] [password] :
@@ -165,11 +167,11 @@ sendRawTransaction这两个方法可用于所有已知abi的合约，传入abi�
 
 ----------------------------------------------------------------------------
 
-此项目源自开源，回馈开源，其中eth-abi，eth-account，eth-hash，eth-keys，eth-typing，eth-utils，rlp, eth-rlp , hexbytes等都为开源项目，各子目录都保留了license,README，向原作者（们）致谢！
+此项目源自开源，响应开源，可在符合license前提下自由使用和分发。其中eth-abi，eth-account，eth-hash，eth-keys，eth-typing，eth-utils，rlp, eth-rlp , hexbytes等都为开源项目，各子目录都保留了license,README，向原作者（们）致谢！
 (是的，兼容evm，复用了abi/rlp编码，但底层项目实际上整个架构已经重写)
 
 
 以上引用的代码有修订，为了便于修改，所以将这些项目并入代码目录，不采用发布包的方式引用。
 
 
-本工程从开始准备到本文档完成历时五天，在工作之余的碎片时间和深夜完成，得益于开源社区既有代码的基础以及python语言的开发效率,所写代码不多，主要是发掘可用api和进行整理、重构、胶水式组合封装(准备和整理环境的时间，简直比写关键代码耗时还长:P)。欢迎体验和pr,一起持续更新维护。
+本工程从开始准备到本文档完成历时五天，在工作之余的碎片时间和深夜完成，得益于开源社区既有代码的基础以及python语言的开发效率,所写代码不多，主要是发掘可用api和进行整理、重构、胶水式组合封装(准备和整理环境的时间，简直比写关键代码耗时还长:P)。欢迎体验和PR,一起持续更新维护。

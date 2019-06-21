@@ -30,8 +30,11 @@ class DatatypeParser:
     func_abi_map_by_selector = dict()
     func_abi_map_by_name = dict()
     event_abi_map = dict()
-    def __init__(self):
-        pass
+    def __init__(self,abi_file=None):
+        if abi_file!=None:
+            self.load_abi_file(abi_file)
+
+
     def from_text(self,abitext):
         self.contract_abi = json.loads(abitext)
         self.parse_abi()

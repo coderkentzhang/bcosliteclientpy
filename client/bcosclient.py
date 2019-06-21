@@ -10,6 +10,7 @@ from utils.contracts import (
     encode_transaction_data,
 
 )
+from client import clientlogger
 from utils.contracts import get_function_info
 from utils.abi import *
 from eth_abi import encode_single, encode_abi,decode_single,decode_abi
@@ -18,6 +19,8 @@ from client_config import  client_config
 import sys
 import json
 import utils.rpc
+import time
+import logging
 
 from eth_account.account import (
     Account
@@ -41,11 +44,13 @@ class BcosClient:
     rpc = None
     fiscoChainId = None
     groupid = None
+    logger =logging.getLogger("BcosClient")
 
     def __init__(self):
         self.init()
 
     def init(self):
+        self.logger = clientlogger.logger
         #load the account from keyfile
         if(client_config.account_keyfile!=None):
             self.fiscoChainId = client_config.fiscoChainId
@@ -57,6 +62,7 @@ class BcosClient:
                 self.client_account = Account.from_key(privkey)
         if(client_config.remote_rpcurl!=None):
             self.rpc = utils.rpc.HTTPProvider(client_config.remote_rpcurl)
+            self.rpc.logger=self.logger
         return self.getinfo()
     '''{  "error": {
         "code": 7,
@@ -81,11 +87,11 @@ class BcosClient:
             data = None
             if("data" in response["error"]):
                 data = response["error"]["data"]
+            self.logger.error("is_error_reponse ",e)
             raise BcosError(code,data,msg)
         return None
 
     def common_request(self,cmd,params):
-
         response = self.rpc.make_request(cmd, params)
         self.is_error_reponse(response)
         return response["result"]
@@ -245,6 +251,30 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"getClientVersion","params":[],"i
         params = [self.groupid,key]
         return self.common_request(cmd, params)
 
+    lastblocklimit  = 100;
+    lastblocklimittime = 0
+    def getBlocklimit(self):
+        tick = time.time()
+        tickstamp = tick - self.lastblocklimittime
+        self.logger.debug("blocklimit tick stamp {}".format(tickstamp))
+        if tickstamp < 100: #get blocklimit every 100sec
+            return self.lastblocklimit
+        for i in range(0,5):#try n times
+            try:
+                blocknum = self.getBlockNumber()
+                oldblocklimit=self.lastblocklimit
+                if blocknum > self.lastblocklimit:
+                    self.lastblocklimit = blocknum + 500
+                    self.logger.info("getBlocklimit:{},blocknum:{},old:{}".format(self.lastblocklimit,blocknum,oldblocklimit))
+                    return self.lastblocklimit
+            except BcosError as e:
+                self.logger.error("getBlocklimit error {}, {}".format(e.code,e.message))
+                time.sleep(0.1)
+
+                continue
+        return self.lastblocklimit
+
+
 
     # https://fisco-bcos-documentation.readthedocs.io/zh_CN/release-2.0/docs/api.html#getpendingtransactions
     def call(self,to_address,contract_abi,fn_name,args=None):
@@ -291,7 +321,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"getClientVersion","params":[],"i
         txmap["randomid"] = random.randint(0, 1000000000)  # 测试用 todo:改为随机数
         txmap["gasPrice"] = 30000000
         txmap["gasLimit"] = 30000000
-        txmap["blockLimit"] = 501  # 测试用，todo：从链上查一下
+        txmap["blockLimit"] = self.getBlocklimit()  #501  # 测试用，todo：从链上查一下
 
         txmap["to"] = to_address
         txmap["value"] = 0
@@ -322,7 +352,6 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"getClientVersion","params":[],"i
     def sendRawTransactionGetReceipt(self, to_address, contract_abi, fn_name, args=None, bin_data=None,timeout=15):
         #print("sendRawTransactionGetReceipt",args)
         txid = self.sendRawTransaction(to_address,contract_abi,fn_name,args,bin_data)
-        import time
         for i in range(0, timeout):
             result = self.getTransactionReceipt(txid)
             #print("getTransactionReceipt : ", result)
@@ -344,21 +373,3 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"getClientVersion","params":[],"i
 
 
 
-    def save_contract_address(self,contractname,newaddress,blocknum=None,memo=None):
-        from configobj import ConfigObj
-        import time
-        #write to file
-        config = ConfigObj(client_config.contract_info_file,
-                           encoding='UTF8')
-        if "addess" not in config:
-            config['address']={}
-        config['address'][contractname] = newaddress
-        if blocknum!=None:
-            if "history" not in config:
-                config["history"]={}
-            timestr = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime());
-            detail="{}:{},block:{}".format(contractname,timestr,blocknum)
-            if memo !=None: #
-                detail="{},{}".format(detail,memo)
-            config["history"][newaddress] = detail
-        config.write()
