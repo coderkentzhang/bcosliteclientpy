@@ -1,3 +1,4 @@
+#!python
 import argparse
 from configobj import ConfigObj
 from client_config import client_config
@@ -11,7 +12,9 @@ from client.bcosclient import (
 )
 import json
 import os
-parser = argparse.ArgumentParser(description='FISCO BCOS lite client python')   # 首先创建一个ArgumentParser对象
+from  datatypes.datatype_parser import DatatypeParser
+
+parser = argparse.ArgumentParser(description='FISCO BCOS 2.0 lite client @python')   # 首先创建一个ArgumentParser对象
 parser.add_argument('cmd',    nargs="+" ,       # 添加参数
                     help='the command for console')
 usagemsg = []
@@ -86,8 +89,33 @@ def format_params(inputparams,tohex=False):
         paramformatted.append(value)
     return paramformatted
 
+def format_params_by_types(inputparams,types):
+    index = -1;
+    newparam=[]
+    #print(types)
+    for type in types:
+        index += 1
+        v = inputparams[index]
+        if type=="str":
+            if '\'' in v:
+                v = v.replace('\'','')
+            newparam.append(v)
+            continue
+        if type=="hex":
+            newparam.append(hex(int(v,10)))
+            continue
+        if type=="bool":
+            if v.lower=="true":
+                newparam.append(True)
+            else:
+                newparam.append(False)
+            continue
+    #print(newparam)
+    return newparam
 
-from  datatypes.datatype_parser import DatatypeParser
+
+
+
 data_parser = DatatypeParser()
 
 usagemsg.append("deploy [abi binary file]\ndeploy contract from a binary file")
@@ -105,9 +133,9 @@ if cmd=="deploy":
     #client.save_contract_address( name,address,blocknum )
 
 usagemsg.append('''call [contractname] [address] [func]  [args...] 
-eg: call SimpleInfo 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc getbalance1 11
+eg: call SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC getbalance1 11
 if address is "ini" ,then load address from :{}
-**importance: for args, use '' for str or address ,eg: 'test','0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc'
+**importance: for args, use '' for str or address ,eg: 'test','0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
 '''.format(client_config.contract_info_file))
 if cmd=="call":
     paramsname = ["contractname", "address", "func"]
@@ -129,9 +157,9 @@ if cmd=="call":
 
 
 usagemsg.append('''sendtx [contractname]  [address] [func] [args...] 
-eg: sendtx SimpleInfo 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc set "test" 100 "0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc"
+eg: sendtx SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC set 'test' 100 '0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
 if address is "ini" ,then load address from :{}
-**importance: for args, use '' for str or address ,eg: 'test','0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc'
+**importance: for args, use '' for str or address ,eg: 'test','0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
 '''.format(client_config.contract_info_file))
 if cmd=="sendtx":
     paramsname = ["contractname", "address", "func"]
@@ -193,35 +221,12 @@ getcmds["getCode"]=["str"]
 getcmds["getTotalTransactionCount"]=[]
 getcmds["getSystemConfigByKey"]=["str"]
 
-def format_params_by_types(inputparams,types):
-    index = -1;
-    newparam=[]
-    #print(types)
-    for type in types:
-        index += 1
-        v = inputparams[index]
-        if type=="str":
-            if '\'' in v:
-                v = v.replace('\'','')
-            newparam.append(v)
-            continue
-        if type=="hex":
-            newparam.append(hex(int(v,10)))
-            continue
-        if type=="bool":
-            if v.lower=="true":
-                newparam.append(True)
-            else:
-                newparam.append(False)
-            continue
-    #print(newparam)
-    return newparam
 
 
 
 
 usagemsg.append('''all the 'get' command for JSON RPC\neg: [getBlockyByNumber 10].
-use 'list' cmd to show all getcmds''')
+use 'list' cmd to show all getcmds ''')
 if cmd in getcmds:
     types = getcmds[cmd]
     fmtparams = format_params_by_types(inputparams, types)
@@ -238,24 +243,35 @@ if cmd in getcmds:
             parser.load_abi_file(inputparams[1])
             print("receipt  logs :")
             print_receipt_logs(result,parser)
+    if "getBlock" in cmd:
+        blocknum = int(result["number"],16)
+        print(">> blocknumber : ",blocknum)
+        print(">> blockhash   : ", result["hash"])
+    if "getTransaction" in cmd:
+        print(inputparams)
+        if len(inputparams) == 2:
+            parser = DatatypeParser()
+            parser.load_abi_file(inputparams[1])
+            inputdata = result["input"]
+            result = parser.parse_transaction_input(inputdata)
+            print("\nabifile : ", inputparams[1])
+            print("transaction input parse result:\n {}".format(result))
 
 
-
-usagemsg.append("list: list all getcmds")
+usagemsg.append("list: list all getcmds (getBlock...getTransaction...getReceipt..getOthers)")
 if cmd == "list":
     print("query commands:")
     for cmd in getcmds:
         print ("{} : {}".format(cmd,getcmds[cmd]))
 
 
-usagemsg.append("int : convert a hex str to int ,eg: int 0x65")
+usagemsg.append("int [hexnum]: convert a hex str to int ,eg: int 0x65")
 if cmd == 'int':
     print(int(inputparams[0],16))
 
 
 usagemsg.append('''txinput [abifile] [inputdata(inhex)]
-parse the transaction input data by spec abifile，eg: txinput sample/SimpleInfo.abi [txinputdata]
-''')
+parse the transaction input data by spec abifile，eg: txinput sample/SimpleInfo.abi [txinputdata]''')
 if cmd =="txinput":
     abifilename = inputparams[0]
     inputdata = inputparams[1]
@@ -269,9 +285,19 @@ if cmd =="txinput":
     print("parse result: {}".format(result))
 
 
+usagemsg.append('''checkaddr [address]: change address to checksum address according EIP55:
+to_checksum_address: 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc -> 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
+''')
+if cmd == "checkaddr":
+    from eth_utils import  to_checksum_address
+    address = inputparams[0]
+    result = to_checksum_address(address)
+    print("to_checksum_address:")
+    print("{} -->\n{}".format(address,result) )
+
 
 if cmd == "usage":
-    print("usage of console:")
+    print("usage of console (FISCO BCOS 2.0 lite client @python):")
     index = 0
     for msg in usagemsg:
         index+=1

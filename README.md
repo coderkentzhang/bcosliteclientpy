@@ -6,6 +6,7 @@
 
 已经适配的python版本:python3.7.3
 
+----------------------------------------------------------------------------
 linux环境准备：
 
 安装和使用，参见本目录下的 [linux_python_setup.md](./linux_python_setup.md)
@@ -95,45 +96,41 @@ console.py 控制台小程序
 
 使用 python console.py usage 查看已经实现的命令，包括创建帐号，delploy/call/sendtx，JSON RPC查询接口等
 
-	usage of console:
+**创建帐号后，如需要做为默认帐号使用，注意修改client_config.ini
+
+	usage of console (FISCO BCOS 2.0 lite client @python):
 
 	1): newaccount [name] [password] :
-
 	create a new account ,save to :[bin/accounts]
 
 	2): deploy [abi binary file]
-
 	deploy contract from a binary file
 
 	3): call [contractname] [address] [func]  [args...]
-
-	eg: call SimpleInfo 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc getbalance1 11
-
+	eg: call SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC getbalance1 11
 	if address is "ini" ,then load address from :bin/contract.ini
-
-	**importance: for args, use '' for str or address ,eg: 'test','0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc'
+	**importance: for args, use '' for str or address ,eg: 'test','0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
 
 
 	4): sendtx [contractname]  [address] [func] [args...]
-
-	eg: sendtx SimpleInfo 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc set "test" 100 "0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc"
-
+	eg: sendtx SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC set 'test' 100 '0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
 	if address is "ini" ,then load address from :bin/contract.ini
-
-	**importance: for args, use '' for str or address ,eg: 'test','0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc'
+	**importance: for args, use '' for str or address ,eg: 'test','0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
 
 
 	5): all the 'get' command for JSON RPC
-
-	eg: [getBlockyByNumber 10] use 'list' cmd to show all getcmds
+	eg: [getBlockyByNumber 10].
+	use 'list' cmd to show all getcmds
 
 	6): list: list all getcmds
 
-	7): int : convert a hex str to int ,eg: int 0x65
+	7): int [hexnum]: convert a hex str to int ,eg: int 0x65
 
-	8): txinput [abifile] [inputdata(in hexstr)]  
-
+	8): txinput [abifile] [inputdata(inhex)]
 	parse the transaction input data by spec abifile，eg: txinput sample/SimpleInfo.abi [txinputdata]
+
+	9): checkaddr [address]: change address to checksum address according EIP55:
+	to_checksum_address: 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc -> 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
 
 
 
