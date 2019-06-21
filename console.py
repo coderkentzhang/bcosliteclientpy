@@ -22,7 +22,7 @@ print("user input : ",args.cmd)
 cmd = args.cmd[0]
 inputparams = args.cmd[1:]
 
-usagemsg.append("newaccount [name] [password] : \ncreate a new account ,save to :[{}]".format(client_config.account_keyfile_path))
+usagemsg.append("newaccount [name] [password] : \ncreate a new account ,save to :[{}],(default) or the path spec in client_config.py:[account_keyfile_path]".format(client_config.account_keyfile_path))
 if cmd == 'newaccount' :
     name=inputparams[0]
     password=inputparams[1]
