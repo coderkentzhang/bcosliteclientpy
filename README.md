@@ -101,24 +101,24 @@ console.py 控制台小程序
 	usage of console (FISCO BCOS 2.0 lite client @python):
 
 	1): newaccount [name] [password] :
-	create a new account ,save to :[bin/accounts] (default) or the path spec in client_config.py:[account_keyfile_path]
+	create a new account ,save to :[bin/accounts],(default) ， the path spec in client_config.py:[account_keyfile_path]
 
-	2): deploy [abi binary file]
-	deploy contract from a binary file
+	2): deploy [abi binary file] save
+	deploy contract from a binary file,if 'save' spec, so save addres to file
 
 	3): call [contractname] [address] [func]  [args...]
 	eg: call SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC getbalance1 11
-	if address is "ini" ,then load address from :bin/contract.ini
-	**importance: for args, use '' for str or address ,eg: 'test','0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
+	if address is "last" ,then load last address from :bin/contract.ini
+	eg: call SimpleInfo last getall
 
 
 	4): sendtx [contractname]  [address] [func] [args...]
 	eg: sendtx SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC set 'test' 100 '0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
-	if address is "ini" ,then load address from :bin/contract.ini
-	**importance: for args, use '' for str or address ,eg: 'test','0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
+	if address is "last" ,then load last address from :bin/contract.ini
+	eg: sendtx SimpleInfo last set 'test' 100 '0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
 
 
-	5): input any 'getXXX' command for JSON RPC
+	5): all the 'get' command for JSON RPC
 	eg: [getBlockyByNumber 10].
 	use 'list' cmd to show all getcmds
 

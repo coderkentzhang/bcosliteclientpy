@@ -23,7 +23,7 @@ print("user input : ",args.cmd)
 cmd = args.cmd[0]
 inputparams = args.cmd[1:]
 
-usagemsg.append("newaccount [name] [password] : \ncreate a new account ,save to :[{}],(default) or the path spec in client_config.py:[account_keyfile_path]".format(client_config.account_keyfile_path))
+usagemsg.append("newaccount [name] [password] : \ncreate a new account ,save to :[{}],(default) , the path spec in client_config.py:[account_keyfile_path]".format(client_config.account_keyfile_path))
 if cmd == 'newaccount' :
     name=inputparams[0]
     password=inputparams[1]
@@ -120,7 +120,7 @@ def format_args_by_types(inputparams,types):
 
 data_parser = DatatypeParser()
 
-usagemsg.append("deploy [abi binary file]\ndeploy contract from a binary file")
+usagemsg.append("deploy [abi binary file] save\ndeploy contract from a binary file,if 'save' spec, so save addres to file")
 if cmd=="deploy":
     '''deploy abi bin file'''
     abibinfile=inputparams[0]
@@ -132,12 +132,15 @@ if cmd=="deploy":
     address = result['contractAddress']
     blocknum = int(result["blockNumber"],16)
     print("on block : {},address: {} ".format(blocknum,address))
-    #client.save_contract_address( name,address,blocknum )
+    if len(inputparams) == 2:
+        if inputparams[1]=="save":
+            client.save_contract_address( name,address,blocknum )
+            print("address save to file: ",client_config.contract_info_file)
 
 usagemsg.append('''call [contractname] [address] [func]  [args...] 
 eg: call SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC getbalance1 11
-if address is "ini" ,then load address from :{}
-**importance: for args, use '' for str or address ,eg: 'test','0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
+if address is "last" ,then load last address from :{}
+eg: call SimpleInfo last getall
 '''.format(client_config.contract_info_file))
 if cmd=="call":
     paramsname = ["contractname", "address", "func"]
@@ -148,7 +151,7 @@ if cmd=="call":
     data_parser.load_abi_file(abi_file)
     contract_abi = data_parser.contract_abi
     address = params["address"]
-    if address=="ini":
+    if address=="last":
         config = ConfigObj(client_config.contract_info_file,encoding='UTF8')
         address = config["address"][params["contractname"]]
     funcname =params["func"]
@@ -162,8 +165,8 @@ if cmd=="call":
 
 usagemsg.append('''sendtx [contractname]  [address] [func] [args...] 
 eg: sendtx SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC set 'test' 100 '0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
-if address is "ini" ,then load address from :{}
-**importance: for args, use '' for str or address ,eg: 'test','0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
+if address is "last" ,then load last address from :{}
+eg: sendtx SimpleInfo last set 'test' 100 '0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
 '''.format(client_config.contract_info_file))
 if cmd=="sendtx":
     paramsname = ["contractname", "address", "func"]
@@ -174,7 +177,7 @@ if cmd=="sendtx":
     data_parser.load_abi_file(abi_file)
     contract_abi = data_parser.contract_abi
     address = params["address"]
-    if address=="ini":
+    if address=="last":
         config = ConfigObj(client_config.contract_info_file,encoding='UTF8')
         address = config["address"][params["contractname"]]
     funcname = params["func"]
