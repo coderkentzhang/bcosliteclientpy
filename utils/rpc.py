@@ -7,7 +7,7 @@ from eth_utils import (
     to_text,
     to_bytes,
 )
-
+from client.stattool import StatTool
 from utils.http import (
     construct_user_agent,
 )
@@ -18,6 +18,8 @@ from utils.request import (
 
 from utils.encoding import (
     FriendlyJsonSerde)
+
+from client import clientlogger
 
 
 def get_default_endpoint():
@@ -91,8 +93,10 @@ class HTTPProvider(JSONBaseProvider):
 
         request_data = self.encode_rpc_request(method, params)
         #print("request", request_data)
+        stat = StatTool.begin()
         self.logger.debug("request: %s, %s,data: %s",
                           self.endpoint_uri, method,request_data)
+
         raw_response = make_post_request(
             self.endpoint_uri,
             request_data,
@@ -100,6 +104,8 @@ class HTTPProvider(JSONBaseProvider):
         )
         #print("raw response ",raw_response)
         response = self.decode_rpc_response(raw_response)
+        stat.done()
+        stat.debug("make_request:{},sendbyts:{}".format(method,len(request_data)) )
         self.logger.debug("GetResponse. %s, Response: %s",
                            method, response)
         return response

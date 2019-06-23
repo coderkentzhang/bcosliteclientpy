@@ -2,6 +2,7 @@
 import argparse
 import sys
 import time
+from client.stattool import StatTool
 from configobj import ConfigObj
 from client_config import client_config
 from eth_account.account import (
@@ -33,10 +34,10 @@ if cmd == 'newaccount' :
     print ("starting : {} {} {} ".format(name,name,password))
     ac = Account.create(password)
     print("new address : ",ac.address)
-    a= time.time()
+    stat = StatTool.begin()
     kf = Account.encrypt(ac.privateKey, password)
-    b=time.time()
-    print("encrypt use time : {}s".format((b - a)))
+    stat.done()
+    print("encrypt use time : {}ms".format(stat.timeused))
     import json
     keyfile = "{}/{}.keystore".format(client_config.account_keyfile_path,name)
     print("save to file : [{}]".format(keyfile) )
@@ -45,10 +46,10 @@ if cmd == 'newaccount' :
 
     with open(keyfile, "r") as dump_f:
         keytext = json.load(dump_f)
-        a = time.time()
+        stat = StatTool.begin()
         privkey = Account.decrypt(keytext,password)
-        b = time.time()
-        print("decrypt use time : {}s".format((b-a)))
+        stat.end()
+        print("decrypt use time : {}ms".format(stat.timeused))
         ac2 = Account.from_key(privkey)
         print("-------------->>")
 

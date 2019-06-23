@@ -10,6 +10,7 @@ from utils.contracts import (
     encode_transaction_data,
 
 )
+from client.stattool import  StatTool
 from client import clientlogger
 from utils.contracts import get_function_info
 from utils.abi import *
@@ -44,13 +45,12 @@ class BcosClient:
     rpc = None
     fiscoChainId = None
     groupid = None
-    logger =logging.getLogger("BcosClient")
+    logger =clientlogger.logger #logging.getLogger("BcosClient")
 
     def __init__(self):
         self.init()
 
     def init(self):
-        self.logger = clientlogger.logger
         #load the account from keyfile
         if(client_config.account_keyfile!=None):
             self.fiscoChainId = client_config.fiscoChainId
@@ -80,7 +80,9 @@ class BcosClient:
 
 
     def is_error_reponse(self,response):
-
+        if response == None:
+            e = BcosError(-1, None, "response is None")
+            return e
         if("error" in response):
             msg = response["error"]["message"]
             code = response["error"]["code"]
@@ -88,12 +90,22 @@ class BcosClient:
             if("data" in response["error"]):
                 data = response["error"]["data"]
             self.logger.error("is_error_reponse code: {}, msg:{} ,data:{}".format(code,msg,data) )
-            raise BcosError(code,data,msg)
+            e = BcosError(code,data,msg)
+            return e
         return None
 
     def common_request(self,cmd,params):
+        stat = StatTool.begin()
         response = self.rpc.make_request(cmd, params)
-        self.is_error_reponse(response)
+        error = self.is_error_reponse(response)
+        memo  ="DONE"
+        if(error!=None):
+            memo = "ERROR {}:{}".format(error.code,error.message)
+        stat.done()
+        stat.debug("commonrequest:{}:{}".format(cmd,memo))
+
+        if(error!=None):
+            raise error;
         return response["result"]
 
     '''
@@ -351,14 +363,27 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"getClientVersion","params":[],"i
     #发送交易后等待共识完成，检索receipt
     def sendRawTransactionGetReceipt(self, to_address, contract_abi, fn_name, args=None, bin_data=None,timeout=15):
         #print("sendRawTransactionGetReceipt",args)
+        stat = StatTool.begin()
         txid = self.sendRawTransaction(to_address,contract_abi,fn_name,args,bin_data)
+        result = None
         for i in range(0, timeout):
             result = self.getTransactionReceipt(txid)
             #print("getTransactionReceipt : ", result)
             if result == None:
                 time.sleep(1)
+                self.logger.info("sendRawTransactionGetReceipt,retrying getTransactionReceipt : {}".format(i))
                 continue
-            return result
+            else:
+                break #get the result break
+        stat.done()
+        memo = "DONE"
+        if result == None:
+            memo = "ERROR:TIMEOUT"
+        stat.debug("sendRawTransactionGetReceipt,{}".format(memo))
+        if result==None:
+            raise BcosError(-1, None,"sendRawTransactionGetReceipt,{}".format(memo))
+        return result
+
     '''
         newaddr = result['contractAddress']
         blocknum = result['blockNumber']
