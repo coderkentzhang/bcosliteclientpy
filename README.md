@@ -189,7 +189,7 @@ sendRawTransaction这两个方法可用于所有已知abi的合约，传入abi�
 
 主要方法有：
 
-    parse_abi: 将abi文件里的function和event解析为字典索引，其中function的索引方式为name和4字节selector两种，供后续查询,func_abi_map_by_selector,func_abi_map_by_name,event_abi_map这几个dict即为字典索引对象     
+    parse_abi: 将abi文件里的function和event解析为字典索引，其中function的索引方式为name和4字节selector两种，供后续查询.<br>func_abi_map_by_selector,func_abi_map_by_name,event_abi_map这几个dict即为字典索引对象     
 
     parse_transaction_input: 用于transaction，用于查询交易后解析input数据（方法+参数）
 
@@ -198,7 +198,7 @@ sendRawTransaction这两个方法可用于所有已知abi的合约，传入abi�
     parse_event_logs：用于receipt，解析eventlog数组，增加eventname，eventdata两个数据
 
 
-和abi有关的主要方法, 详细实现可查询代码
+和abi基础数据结构操作有关的方法分布在多个模块, 详细实现可查询代码
 
 	from eth_abi import(
 		encode_single,  #输入abi定义如("unit256","string")，进行数据编码
