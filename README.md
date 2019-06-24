@@ -133,7 +133,7 @@ logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日�
 
 
 	5): all the 'get' command for JSON RPC
-	eg: [getBlockyByNumber 10].
+	eg: [getBlockyByNumber 10 true] 
 	use 'list' cmd to show all getcmds
 
 	6): list: list all getcmds (getBlock...getTransaction...getReceipt..getOthers)

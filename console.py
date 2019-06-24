@@ -48,7 +48,7 @@ if cmd == 'newaccount' :
         keytext = json.load(dump_f)
         stat = StatTool.begin()
         privkey = Account.decrypt(keytext,password)
-        stat.end()
+        stat.done()
         print("decrypt use time : {}ms".format(stat.timeused))
         ac2 = Account.from_key(privkey)
         print("-------------->>")
@@ -159,7 +159,7 @@ def print_parse_transaction(tx,contractname,parser=None):
 
 
 
-usagemsg.append("deploy [abi binary file] save\ndeploy contract from a binary file,if 'save' spec, so save addres to file")
+usagemsg.append("deploy [abi binary file] save\ndeploy contract from a binary file,if 'save' in args, so save addres to file")
 if cmd=="deploy":
     '''deploy abi bin file'''
     abibinfile=inputparams[0]
@@ -270,7 +270,7 @@ getcmds["getSystemConfigByKey"]=["str"]
 
 
 
-usagemsg.append('''all the 'get' command for JSON RPC\neg: [getBlockyByNumber 10].
+usagemsg.append('''all the 'get' command for JSON RPC\neg: [getBlockByNumber 10 true].
 use 'list' cmd to show all getcmds ''')
 if cmd in getcmds:
     types = getcmds[cmd]
@@ -287,8 +287,10 @@ if cmd in getcmds:
 
             print_receipt_logs_and_txoutput(result,contractname)
 
-
-    if "getBlock" in cmd:
+    if cmd == "getBlockNumber":
+        print("blocknumber is {}".format(int(result,16)))
+        
+    if "getBlockBy" in cmd:
         blocknum = int(result["number"],16)
         print(">> blocknumber : ",blocknum)
         print(">> blockhash   : ", result["hash"])
