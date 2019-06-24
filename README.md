@@ -108,7 +108,7 @@ logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日�
 
 使用 python console.py usage 查看已经实现的命令，包括创建帐号，delploy/call/sendtx，JSON RPC查询接口等
 
-** 创建帐号后，如需要做为默认帐号使用，注意修改client_config.ini **
+** 创建帐号后，如需要做为默认帐号使用，注意修改client_config.py的account_keyfile和account_password配置项 **
 
 
 
