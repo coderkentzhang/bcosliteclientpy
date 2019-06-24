@@ -70,7 +70,7 @@
 
 修改配置文件。将client_config.py.template复制为client_config.py，修改client_config.py里的值：
 
-    remote_rpcurl="http://127.0.0.1:8545" #节点的rpc端口，和要通信的节点*必须*一致
+    remote_rpcurl="http://127.0.0.1:8545" #节点的json rpc端口，对应FISCO BCOS配置文件config.ini里的 [rpc]jsonrpc_listen_port项
 	
     contract_info_file="bin/accounts/contract.ini" #保存已部署合约信息的文件
 	
