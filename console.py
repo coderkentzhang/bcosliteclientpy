@@ -133,10 +133,11 @@ def format_args_by_types(inputparams,types):
             newparam.append(hex(int(v,10)))
             continue
         if type=="bool":
-            if v.lower=="true":
+            if v.lower()=="true":
                 newparam.append(True)
             else:
                 newparam.append(False)
+
             continue
     #print(newparam)
     return newparam
