@@ -92,6 +92,8 @@ clientdemo.py会加载默认演示合约sample/SimpleInfo.sol以及其abi,bin，
 
 ***如报告Crypto包不存在，进入virtualenv的目录如d:\python_env\blc\lib\site-packages\,将小写的crypto目录名第一个字母改为大写Crypto （这貌似是windows环境的一个坑 ***
 
+logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日志，包括客户端日志和统计日志两种，默认级别为DEBUG
+
 ----------------------------------------------------------------------------
 
 本项目提供可执行的应用如下，均基于client/bcosclient.py基础组件建立：
@@ -103,7 +105,7 @@ clientdemo.py会加载默认演示合约sample/SimpleInfo.sol以及其abi,bin，
 
 **创建帐号后，如需要做为默认帐号使用，注意修改client_config.ini
 
-logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日志，默认级别为DEBUG
+
 
 	usage of console (FISCO BCOS 2.0 lite client @python):
 
