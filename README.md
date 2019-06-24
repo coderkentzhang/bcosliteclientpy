@@ -194,7 +194,7 @@ sendRawTransaction这两个方法可用于所有已知abi的合约，传入abi�
     parse_event_logs：用于receipt，解析eventlog数组，增加eventname，eventdata两个数据
 
 
-和abi有关的主要方法包括, 详细实现可查询代码
+和abi有关的主要方法, 详细实现可查询代码
 
 	from eth_abi import(
 		encode_single,  #输入abi定义如("unit256","string")，进行数据编码
