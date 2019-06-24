@@ -109,7 +109,7 @@ if True:
     print("fn_arguments: ", fn_arguments)
     outputs = fn_abi["outputs"]
     print("outputs:",outputs)
-    fn_output_types = get_fn_abi_types_str(fn_abi,"outputs")
+    fn_output_types = get_fn_abi_types_single(fn_abi, "outputs")
     print("output types str:", fn_output_types)
     decoderesult = decode_single(fn_output_types, decode_hex(outputdata))
     print(decoderesult)
@@ -119,5 +119,5 @@ if True:
     print("decode  by abi:",decoderesult)
     fn_input_types = get_fn_abi_types(fn_abi, "inputs")
     print(fn_input_types)
-    fn_input_types = get_fn_abi_types_str(fn_abi, "inputs")
+    fn_input_types = get_fn_abi_types_single(fn_abi, "inputs")
     print(fn_input_types)

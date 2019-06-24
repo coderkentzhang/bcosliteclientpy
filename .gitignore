@@ -9,6 +9,7 @@ bin/contract.ini
 
 # Distribution / packaging
 .Python
+bin/
 build/
 develop-eggs/
 dist/

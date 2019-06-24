@@ -308,7 +308,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"getClientVersion","params":[],"i
         )
         #print("fn_selector",fn_selector)
         #print("fn_arguments",fn_arguments)
-        fn_output_types = get_fn_abi_types_str(fn_abi, "outputs")
+        fn_output_types = get_fn_abi_types_single(fn_abi, "outputs")
         #print("output types str:", fn_output_types)
         decoderesult = decode_single(fn_output_types, decode_hex(outputdata))
         return decoderesult

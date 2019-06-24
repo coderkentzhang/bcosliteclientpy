@@ -94,7 +94,7 @@ def get_fn_abi_types(abi,name):
         return [collapse_if_tuple(arg) for arg in abi[name]]
 
 #return types in ('','','') add by kentz
-def get_fn_abi_types_str(fn_abi,name):
+def get_fn_abi_types_single(fn_abi, name):
     if fn_abi['type'] == 'fallback':
         return []
     fn_output_types = "(" + ','.join([
@@ -125,12 +125,12 @@ def get_indexed_event_inputs(event_abi):
     return [arg for arg in event_abi['inputs'] if arg['indexed'] is True]
 
 #add by kentz
-def exclude_indexed_event_inputs_to_array(event_abi):
+def exclude_indexed_event_inputs_to_abi(event_abi):
     args_not_indexed =exclude_indexed_event_inputs(event_abi)
     result =  [collapse_if_tuple(arg) for arg in args_not_indexed]
     return result
-
-def exclude_indexed_event_inputs_to_str(event_abi):
+#add by kentz
+def exclude_indexed_event_inputs_to_single(event_abi):
     args_not_indexed =exclude_indexed_event_inputs(event_abi)
     result = fn_output_types = "(" + ','.join([
         arg['type'] for arg in normalize_event_input_types(args_not_indexed)
