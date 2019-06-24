@@ -226,7 +226,7 @@ sendRawTransaction这两个方法可用于所有已知abi的合约，传入abi�
 
 ----------------------------------------------------------------------------
 
-## 其他
+## 开源说明
 
 此项目源自开源，响应开源，可在符合license前提下自由使用和分发。其中eth-abi，eth-account，eth-hash，eth-keys，eth-typing，eth-utils，rlp, eth-rlp , hexbytes等都为开源项目，各子目录都保留了license,README，向原作者（们）致谢！
 (是的，兼容evm，复用了abi/rlp编码，但底层项目实际上整个架构已经重写)
