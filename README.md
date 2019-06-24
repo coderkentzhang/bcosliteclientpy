@@ -70,7 +70,7 @@
 
 修改配置文件。将client_config.py.template复制为client_config.py，修改client_config.py里的值：
 
-    remote_rpcurl="http://127.0.0.1:8545" #节点的json rpc端口，对应FISCO BCOS配置文件config.ini里的 [rpc]jsonrpc_listen_port项
+    remote_rpcurl="http://127.0.0.1:8545" #节点的JSON RPC端口，对应FISCO BCOS配置文件config.ini里的 [rpc]jsonrpc_listen_port项
 	
     contract_info_file="bin/accounts/contract.ini" #保存已部署合约信息的文件
 	
@@ -92,7 +92,10 @@ clientdemo.py会加载默认演示合约sample/SimpleInfo.sol以及其abi,bin，
 
 	python clientdemo.py
 
-** 如报告Crypto包不存在，进入virtualenv的目录如d:\python_env\blc\lib\site-packages\,将小写的crypto目录名第一个字母改为大写Crypto （这貌似是windows环境的一个坑 **
+** 如报告Crypto包不存在，进入virtualenv的目录如d:\python_env\blc\lib\site-packages\,将小写的crypto目录名第一个字母改为大写Crypto （这貌似是windows环境的一个坑) **
+
+** 由于不同环境操作系统依赖，python版本，网络情况有所不同，如自动安装依赖部分不成功，可通过pip install [指定模块]的方式尝试安装 **
+
 
 logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日志，包括客户端日志和统计日志两种，默认级别为DEBUG
 
