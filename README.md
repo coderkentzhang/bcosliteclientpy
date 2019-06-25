@@ -119,7 +119,7 @@ logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日�
 	1): 创建一个新帐户，参数为帐户名(如alice,bob)和密码
 	结果加密保存在配置文件指定的帐户目录 *如同目录下已经有同名帐户文件，旧文件会复制一个备份
 	如输入了"save"参数在最后，则不做询问直接备份和写入
-	newaccount [name] [password] [-f]: 
+	newaccount [name] [password] [save]: 
 	create a new account ,save to :[bin/accounts] (default) , the path in client_config.py:[account_keyfile_path]
 	if account file has exist ,then old file will save to a backup
 	if "save" arg follows,then backup file and write new without ask
@@ -166,7 +166,7 @@ logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日�
 
 ### 2 体验应用-->
 
-clientdemo.py演示调用client/bcosclient.py里实现的接口，已经实现FISCO BCOS2.0的所有rpc查询接口
+clientdemo.py和getdemo.py演示调用client/bcosclient.py里实现的接口，clientdemo.py演示部署/交易/call流程，getdemo.py已经实现FISCO BCOS2.0的所有rpc查询接口
 
 ----------------------------------------------------------------------------
 ## 主要基础组件
