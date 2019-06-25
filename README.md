@@ -103,7 +103,11 @@ logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日�
 
 ## 本项目提供可执行的应用如下，均基于client/bcosclient.py基础组件建立：
 
-### 1 console.py 控制台应用-->
+### 1 体验应用-->
+
+clientdemo.py和getdemo.py演示调用client/bcosclient.py里实现的接口，clientdemo.py演示部署/交易/call流程，getdemo.py已经实现FISCO BCOS2.0的所有rpc查询接口
+
+### 2 console.py 控制台应用-->
 
 
 使用 python console.py usage 查看已经实现的命令，包括创建帐号，delploy/call/sendtx，JSON RPC查询接口等
@@ -162,11 +166,6 @@ logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日�
 	checkaddr [address]: change address to checksum address according EIP55:
 	to_checksum_address: 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc -> 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
 
-
-
-### 2 体验应用-->
-
-clientdemo.py和getdemo.py演示调用client/bcosclient.py里实现的接口，clientdemo.py演示部署/交易/call流程，getdemo.py已经实现FISCO BCOS2.0的所有rpc查询接口
 
 ----------------------------------------------------------------------------
 ## 主要基础组件
