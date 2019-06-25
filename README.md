@@ -112,38 +112,49 @@ logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日�
 
 
 
-	usage of console (FISCO BCOS 2.0 lite client @python):
+	使用说明,输入python console.py [指令 参数列表]
+	Usage of console (FISCO BCOS 2.0 lite client @python):
+	python console.py [cmd args]
 
-	1): newaccount [name] [password] :
-	create a new account ,save to :[bin/accounts],(default) ， the path spec in client_config.py:[account_keyfile_path]
+	1): 创建一个新帐户，参数为帐户名(如alice,bob)和密码，结果加密保存在配置文件指定的帐户目录
+	newaccount [name] [password] :
+	create a new account ,save to :[bin/accounts] (default) , the path in client_config.py:[account_keyfile_path]
 
-	2): deploy [abi binary file] save
-	deploy contract from a binary file,if 'save' spec, so save addres to file
+	2): 部署合约,合约来自编译后的bin文件。如给出'save'参数，新地址会写入本地记录文件
+	deploy [abi binary file] save
+	deploy contract from a binary file,if 'save' in args, so save addres to file
 
-	3): call [contractname] [address] [func]  [args...]
+	3): call合约的一个只读接口
+	call [contractname] [address] [func]  [args...]
 	eg: call SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC getbalance1 11
 	if address is "last" ,then load last address from :bin/contract.ini
 	eg: call SimpleInfo last getall
 
 
-	4): sendtx [contractname]  [address] [func] [args...]
-	eg: sendtx SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC set 'test' 100 '0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
+	4): 发送交易调用指定合约的接口，交易如成功，结果会写入区块和状态
+	sendtx [contractname]  [address] [func] [args...]
+	eg: sendtx SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC set alice 100 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
 	if address is "last" ,then load last address from :bin/contract.ini
 	eg: sendtx SimpleInfo last set 'test' 100 '0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
 
 
-	5): all the 'get' command for JSON RPC
-	eg: [getBlockyByNumber 10 true] 
+	5): 各种get接口，查询节点的各种状态（不一一列出，可用list指令查看接口列表和参数名）
+	all the 'get' command for JSON RPC
+	eg: [getBlockByNumber 10 true].
 	use 'list' cmd to show all getcmds
 
-	6): list: list all getcmds (getBlock...getTransaction...getReceipt..getOthers)
+	6): 列出所有支持的get接口名和参数
+	list: list all getcmds (getBlock...getTransaction...getReceipt..getOthers)
 
-	7): int [hexnum]: convert a hex str to int ,eg: int 0x65
+	7): 输入一个十六进制的数字，转为十进制（考虑到json接口里很多数字都是十六进制的，所以提供这个功能）
+	int [hexnum]: convert a hex str to int ,eg: int 0x65
 
-	8): txinput [abifile] [inputdata(inhex)]
-	parse the transaction input data by spec abifile，eg: txinput sample/SimpleInfo.abi [txinputdata]
+	8): 复制一段来自transaction的inputdata(十六进制字符串)，指定合约名，则可以自动解析（合约的abi文件应存在指定目录下）
+	txinput [contractname] [inputdata(inhex)]
+	parse the transaction input data by  contractname，eg: txinput SimpleInfo [txinputdata]
 
-	9): checkaddr [address]: change address to checksum address according EIP55:
+	9): 将普通地址转为自校验地址,自校验地址使用时不容易出错
+	checkaddr [address]: change address to checksum address according EIP55:
 	to_checksum_address: 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc -> 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
 
 
