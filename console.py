@@ -1,6 +1,7 @@
 #!python
 import argparse
 import sys
+import shutil
 import time
 from client.stattool import StatTool
 from configobj import ConfigObj
@@ -29,15 +30,22 @@ cmd = args.cmd[0]
 inputparams = args.cmd[1:]
 
 validcmds.append("newaccount")
-usagemsg.append('''创建一个新帐户，参数为帐户名(如alice,bob)和密码，结果加密保存在配置文件指定的帐户目录
-newaccount [name] [password] : \ncreate a new account ,save to :[{}] (default) , the path in client_config.py:[account_keyfile_path]'''
+usagemsg.append('''创建一个新帐户，参数为帐户名(如alice,bob)和密码
+结果加密保存在配置文件指定的帐户目录 *如同目录下已经有同名帐户文件，旧文件会复制一个备份
+如输入了"save"参数在最后，则不做询问直接备份和写入
+newaccount [name] [password] [-f]: \ncreate a new account ,save to :[{}] (default) , the path in client_config.py:[account_keyfile_path]
+if account file has exist ,then old file will save to a backup
+if "save" arg follows,then backup file and write new without ask'''
                 .format(client_config.account_keyfile_path))
 if cmd == 'newaccount' :
     name=inputparams[0]
     password=inputparams[1]
     print ("starting : {} {} {} ".format(name,name,password))
     ac = Account.create(password)
-    print("new address : ",ac.address)
+    print("new address :\t",ac.address)
+    print("new privkey :\t",encode_hex(ac.key) )
+    print("new pubkey :\t",ac.publickey )
+
     stat = StatTool.begin()
     kf = Account.encrypt(ac.privateKey, password)
     stat.done()
@@ -45,9 +53,33 @@ if cmd == 'newaccount' :
     import json
     keyfile = "{}/{}.keystore".format(client_config.account_keyfile_path,name)
     print("save to file : [{}]".format(keyfile) )
-    with open(keyfile, "w") as dump_f:
-        json.dump(kf, dump_f)
+    forcewrite = False
+    if not os.access(keyfile, os.F_OK):
+        forcewrite = True
+    else:
+        #old file exist,move to backup file first
+        if(len(inputparams)==3 and inputparams[2] == "save"):
+            forcewrite = True
+        else:
+            str = input(">> file [{}] exist , continue (y/n): ".format(keyfile));
+            if (str.lower() == "y"):
+                forcewrite = True
+            else:
+                forcewrite = False
+                print("SKIP write new account to file,use exists account for [{}]".format(name))
+        #forcewrite ,so do backup job
+        if(forcewrite):
+            filestat = os.stat(keyfile)
+            filetime = time.strftime("%Y%m%d%H%M%S", time.localtime(filestat.st_ctime) )
+            backupfile = "{}.{}".format(keyfile,filetime)
+            print("backup [{}] to [{}]".format(keyfile,backupfile))
+            shutil.move(keyfile,backupfile)
 
+    if forcewrite:
+        with open(keyfile, "w") as dump_f:
+            json.dump(kf, dump_f)
+    print(">>-------------------------------------------------------")
+    print(">> read [{}] again after new account,address & keys in file:".format(keyfile))
     with open(keyfile, "r") as dump_f:
         keytext = json.load(dump_f)
         stat = StatTool.begin()
@@ -55,11 +87,9 @@ if cmd == 'newaccount' :
         stat.done()
         print("decrypt use time : %.3f s"%(stat.timeused))
         ac2 = Account.from_key(privkey)
-        print("-------------->>")
-
-        print("address:",ac2.address)
-        print("privkey:",encode_hex(ac2.key))
-        print("pubkey :",ac2.publickey)
+        print("address:\t",ac2.address)
+        print("privkey:\t",encode_hex(ac2.key))
+        print("pubkey :\t",ac2.publickey)
         print("\naccount store in file: [{}]".format(keyfile))
         print("\n**** please remember your password !!! *****")
 
@@ -250,7 +280,7 @@ if cmd=="sendtx":
 
 
 getcmds=dict()
-getcmds["getClientVersion"]=[]
+getcmds["getNodeVersion"]=[]
 getcmds["getBlockNumber"]=[]
 getcmds["getPbftView"]=[]
 getcmds["getSealerList"]=[]
@@ -306,7 +336,10 @@ if cmd in getcmds:
     params = [client.groupid]
     params.extend(fmtargs)
     #print(params)
-    result  = client.common_request(cmd,params)
+    sendcmd = cmd
+    if cmd=="getNodeVersion": #getNodeVersion is a alias for getClientVersion
+        sendcmd = "getClientVersion"
+    result  = client.common_request(sendcmd,params)
     print(">> get result:",json.dumps(result,indent=4))
 
     if cmd == "getTransactionReceipt":
@@ -395,6 +428,5 @@ python console.py [cmd args]
 
 
 if (cmd not in validcmds) and  (cmd not in getcmds):
-
     printusage()
     print("console cmd  [{}]  not implement yet,see the usage\n".format(cmd))
