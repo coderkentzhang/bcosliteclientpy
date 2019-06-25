@@ -121,8 +121,9 @@ logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日�
 	create a new account ,save to :[bin/accounts] (default) , the path in client_config.py:[account_keyfile_path]
 
 	2): 部署合约,合约来自编译后的bin文件。如给出'save'参数，新地址会写入本地记录文件
-	deploy [abi binary file] save
-	deploy contract from a binary file,if 'save' in args, so save addres to file
+	deploy [contract_binary_file] [save]
+	deploy contract from a binary file,eg: deploy sample/SimpleInfo.bin
+	if 'save' in args, so save addres to file
 
 	3): call合约的一个只读接口
 	call [contractname] [address] [func]  [args...]

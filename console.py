@@ -163,7 +163,8 @@ def print_parse_transaction(tx,contractname,parser=None):
 
 validcmds.append("deploy")
 usagemsg.append('''部署合约,合约来自编译后的bin文件。如给出'save'参数，新地址会写入本地记录文件
-deploy [abi binary file] save\ndeploy contract from a binary file,if 'save' in args, so save addres to file''')
+deploy [contract_binary_file] [save]\ndeploy contract from a binary file,eg: deploy sample/SimpleInfo.bin
+if 'save' in args, so save addres to file''')
 if cmd=="deploy":
     '''deploy abi bin file'''
     abibinfile=inputparams[0]
