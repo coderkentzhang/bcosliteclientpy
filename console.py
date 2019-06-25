@@ -258,17 +258,17 @@ getcmds["getGroupPeers"]=[]
 getcmds["getNodeIDList"]=[]
 getcmds["getGroupList"]=[]
 getcmds["getBlockByHash"]=[["str","bool"],"hash : 区块Hash(hash string),是否查询交易数据(true/false for with transaction data)"]
-getcmds["getBlockByNumber"]=[["hex","bool"],"number,bool : 区块高度(number),是否查询交易数据(true/false for with transaction data)"]
+getcmds["getBlockByNumber"]=[["hex","bool"],"number bool : 区块高度(number),是否查询交易数据(true/false for with transaction data)"]
 getcmds["getBlockHashByNumber"]=[["hex"],"number : 区块高度(number)"]
 getcmds["getTransactionByHash"]=[["str"],"hash : 交易Hash(hash string)"]
-getcmds["getTransactionByBlockHashAndIndex"]=[["str","hex"],"hash,index:区块Hash(hash string), 交易在区块里的位置(index)"]
-getcmds["getTransactionByBlockNumberAndIndex"]=[["hex","hex"],"number,hash:区块高度(number),交易在区块里的位置(index)"]
+getcmds["getTransactionByBlockHashAndIndex"]=[["str","hex"],"blockhash index : 区块Hash(hash string), 交易在区块里的位置(index)"]
+getcmds["getTransactionByBlockNumberAndIndex"]=[["hex","hex"],"blocknumber index : 区块高度(number),交易在区块里的位置(index)"]
 getcmds["getTransactionReceipt"]=["str","hash: 交易hash(hash string)"]
 getcmds["getPendingTransactions"]=[]
 getcmds["getPendingTxSize"]=[]
 getcmds["getCode"]=["str"]
 getcmds["getTotalTransactionCount"]=[]
-getcmds["getSystemConfigByKey"]=[["str"],"name:配置参数名(system param name),eg:tx_count_limit"]
+getcmds["getSystemConfigByKey"]=[["str"],"name : 配置参数名(system param name),eg:tx_count_limit"]
 
 
 
@@ -284,10 +284,21 @@ if cmd in getcmds:
         types = getcmds[cmd][0]
     if "getBlockBy" in cmd:
         #make a default for getBlockBy...
-        if(len(inputparams) < 2):
+        if(len(inputparams) == 1):
             inputparams.append("false")
             print("**for getBlockby , missing 2nd arg ,defaut gave:don't retriev transaction detail\n")
-    fmtargs = format_args_by_types(inputparams, types)
+
+    try:
+        fmtargs = format_args_by_types(inputparams, types)
+    except Exception as e:
+        cmdinfo = getcmds[cmd]
+        memo=" no args"
+        if(len(cmdinfo)==2):
+            memo =" {} ".format(cmdinfo[1])
+        print(">>[ERROR]args error,should be : {} {},break\n".format(cmd,memo) )
+        raise e
+
+
     print("is a get :{},params:{}".format(cmd,fmtargs) )
     params = [client.groupid]
     params.extend(fmtargs)
