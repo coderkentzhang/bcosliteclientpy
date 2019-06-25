@@ -8,7 +8,7 @@
 
 实现了一个命令行的console交互，简单配置后可以和节点通过JSON RPC接口通信，创建帐号、部署合约、发送交易查询信息。
 
-已经适配的python版本:python3.7.3
+已经适配的python版本:python 3.6.x, 3.7.x
 
 ----------------------------------------------------------------------------
 ## linux环境准备：
@@ -113,7 +113,6 @@ clientdemo.py和getdemo.py演示调用client/bcosclient.py里实现的接口，c
 使用 python console.py usage 查看已经实现的命令，包括创建帐号，delploy/call/sendtx，JSON RPC查询接口等
 
 ** 创建帐号后，如需要做为默认帐号使用，注意修改client_config.py的account_keyfile和account_password配置项 **
-
 
 
 	使用说明,输入python console.py [指令 参数列表]
