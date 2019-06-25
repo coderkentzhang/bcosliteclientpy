@@ -28,6 +28,8 @@
 	pyenv virtualenv 3.7.3 blc
 	
 	pyenv activate blc
+	
+	pip install --upgrade pip
 
 进入名为pytho 3.7.3 , blc的开发运行环境（blc这个名可替换）
 
@@ -48,6 +50,8 @@
 3.创建一个独立的python环境: virtualenv blc  ("blc"为环境名，可用其他名字)
 
 4.运行：blc\Scripts\activate.bat
+
+5.更新pip: pip install --upgrade pip
 
 可以看到命令行前面多了（blc），独立的名为blc的python环境建立完成
 
