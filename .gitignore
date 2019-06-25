@@ -10,6 +10,7 @@ bin/contract.ini
 # Distribution / packaging
 .Python
 bin/
+bin/logs/*
 build/
 develop-eggs/
 dist/

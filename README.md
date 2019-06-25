@@ -116,9 +116,13 @@ logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日�
 	Usage of console (FISCO BCOS 2.0 lite client @python):
 	python console.py [cmd args]
 
-	1): 创建一个新帐户，参数为帐户名(如alice,bob)和密码，结果加密保存在配置文件指定的帐户目录
-	newaccount [name] [password] :
+	1): 创建一个新帐户，参数为帐户名(如alice,bob)和密码
+	结果加密保存在配置文件指定的帐户目录 *如同目录下已经有同名帐户文件，旧文件会复制一个备份
+	如输入了"save"参数在最后，则不做询问直接备份和写入
+	newaccount [name] [password] [-f]: 
 	create a new account ,save to :[bin/accounts] (default) , the path in client_config.py:[account_keyfile_path]
+	if account file has exist ,then old file will save to a backup
+	if "save" arg follows,then backup file and write new without ask
 
 	2): 部署合约,合约来自编译后的bin文件。如给出'save'参数，新地址会写入本地记录文件
 	deploy [contract_binary_file] [save]
