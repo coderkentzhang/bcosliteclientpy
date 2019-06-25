@@ -279,7 +279,9 @@ all the 'get' command for JSON RPC\neg: [getBlockByNumber 10 true].
 use 'list' cmd to show all getcmds ''')
 
 if cmd in getcmds:
-    types = getcmds[cmd][0]
+    types=[]
+    if len(getcmds[cmd]) > 0:
+        types = getcmds[cmd][0]
     if "getBlockBy" in cmd:
         #make a default for getBlockBy...
         if(len(inputparams) < 2):
@@ -291,7 +293,7 @@ if cmd in getcmds:
     params.extend(fmtargs)
     #print(params)
     result  = client.common_request(cmd,params)
-    print(json.dumps(result,indent=4))
+    print(">> get result:",json.dumps(result,indent=4))
 
     if cmd == "getTransactionReceipt":
         if len(inputparams) == 2:
@@ -372,6 +374,7 @@ python console.py [cmd args]
     for msg in usagemsg:
         index+=1
         print("{}): {}\n".format(index,msg) )
+
 
 
 if cmd == 'test':
