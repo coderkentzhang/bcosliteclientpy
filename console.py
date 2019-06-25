@@ -22,11 +22,13 @@ parser = argparse.ArgumentParser(description='FISCO BCOS 2.0 lite client @python
 parser.add_argument('cmd',    nargs="+" ,       # 添加参数
                     help='the command for console')
 usagemsg = []
+validcmds = []
 args = parser.parse_args()
 print("\n>> user input : {}\n".format(args.cmd) )
 cmd = args.cmd[0]
 inputparams = args.cmd[1:]
 
+validcmds.append("newaccount")
 usagemsg.append('''创建一个新帐户，参数为帐户名(如alice,bob)和密码，结果加密保存在配置文件指定的帐户目录
 newaccount [name] [password] : \ncreate a new account ,save to :[{}] (default) , the path in client_config.py:[account_keyfile_path]'''
                 .format(client_config.account_keyfile_path))
@@ -159,7 +161,7 @@ def print_parse_transaction(tx,contractname,parser=None):
 #start command functions
 
 
-
+validcmds.append("deploy")
 usagemsg.append('''部署合约,合约来自编译后的bin文件。如给出'save'参数，新地址会写入本地记录文件
 deploy [abi binary file] save\ndeploy contract from a binary file,if 'save' in args, so save addres to file''')
 if cmd=="deploy":
@@ -181,7 +183,7 @@ if cmd=="deploy":
         print("\nNOTE : if want to save new address as last addres for (call/sendtx)\nadd 'save' to cmdline and run again")
     sys.exit(0)
 
-
+validcmds.append("call")
 usagemsg.append('''call合约的一个只读接口
 call [contractname] [address] [func]  [args...] 
 eg: call SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC getbalance1 11
@@ -209,6 +211,7 @@ if cmd=="call":
     result = client.call(address,contract_abi,funcname,args)
     print("call result: ",result )
 
+validcmds.append("sendtx")
 usagemsg.append('''发送交易调用指定合约的接口，交易如成功，结果会写入区块和状态
 sendtx [contractname]  [address] [func] [args...] 
 eg: sendtx SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC set alice 100 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
@@ -277,7 +280,6 @@ getcmds["getSystemConfigByKey"]=[["str"],"name : 配置参数名(system param na
 usagemsg.append('''各种get接口，查询节点的各种状态（不一一列出，可用list指令查看接口列表和参数名）
 all the 'get' command for JSON RPC\neg: [getBlockByNumber 10 true].
 use 'list' cmd to show all getcmds ''')
-
 if cmd in getcmds:
     types=[]
     if len(getcmds[cmd]) > 0:
@@ -328,7 +330,7 @@ if cmd in getcmds:
         if abifile!=None:
             print_parse_transaction(result,abifile)
 
-
+validcmds.append("list")
 usagemsg.append('''列出所有支持的get接口名和参数
 list: list all getcmds (getBlock...getTransaction...getReceipt..getOthers)''')
 if cmd == "list":
@@ -342,13 +344,13 @@ if cmd == "list":
         print ("{} ): {}\t{}".format(i,cmd,hint))
         print("----------------------------------------------------------------------------------------")
 
-
+validcmds.append("int")
 usagemsg.append('''输入一个十六进制的数字，转为十进制（考虑到json接口里很多数字都是十六进制的，所以提供这个功能）
 int [hexnum]: convert a hex str to int ,eg: int 0x65''')
 if cmd == 'int':
     print(int(inputparams[0],16))
 
-
+validcmds.append("txinput")
 usagemsg.append('''复制一段来自transaction的inputdata(十六进制字符串)，指定合约名，则可以自动解析（合约的abi文件应存在指定目录下）
 txinput [contractname] [inputdata(inhex)]
 parse the transaction input data by  contractname，eg: txinput SimpleInfo [txinputdata]''')
@@ -362,7 +364,7 @@ if cmd =="txinput":
     print("\nabifile : ",default_abi_file(contractname))
     print("parse result: {}".format(result))
 
-
+validcmds.append("checkaddr")
 usagemsg.append('''将普通地址转为自校验地址,自校验地址使用时不容易出错
 checkaddr [address]: change address to checksum address according EIP55:
 to_checksum_address: 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc -> 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
@@ -374,24 +376,24 @@ if cmd == "checkaddr":
     print("to_checksum_address:")
     print("{} -->\n{}".format(address,result) )
 
-
-if cmd == "usage":
-    print('''使用说明,输入python console.py [指令 参数列表]
-Usage of console (FISCO BCOS 2.0 lite client @python):
-python console.py [cmd args]
-''')
-
+def printusage():
     index = 0
     for msg in usagemsg:
         index+=1
         print("{}): {}\n".format(index,msg) )
 
 
+validcmds.append("usage")
+if cmd == "usage":
+    print('''使用说明,输入python console.py [指令 参数列表]
+Usage of console (FISCO BCOS 2.0 lite client @python):
+python console.py [cmd args]
+''')
+    printusage()
 
-if cmd == 'test':
-    a = [["hex","bool"],"number,是否查询交易数据(true/false for with transaction data)"]
-    print(a)
-    print(a[0])
-    print(a[1])
-    for b in a[0]:
-        print (b)
+
+
+if (cmd not in validcmds) and  (cmd not in getcmds):
+
+    printusage()
+    print("console cmd  [{}]  not implement yet,see the usage\n".format(cmd))
