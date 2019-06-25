@@ -295,8 +295,8 @@ if cmd in getcmds:
         memo=" no args"
         if(len(cmdinfo)==2):
             memo =" {} ".format(cmdinfo[1])
-        print(">>[ERROR]args error,should be : {} {},break\n".format(cmd,memo) )
-        raise e
+        print("args not match,should be : {} {},break\n".format(cmd,memo) )
+        sys.exit("please try again...")
 
 
     print("is a get :{},params:{}".format(cmd,fmtargs) )
