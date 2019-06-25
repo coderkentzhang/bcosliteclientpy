@@ -27,7 +27,7 @@ hex(num)  : int -> hex
 doQueryTest =True
 if doQueryTest:
     print("\n>>---------------------------------------------------------------------")
-    res = client.getClientVersion()
+    res = client.getNodeVersion()
     print("\n>>---------------------------------------------------------------------")
     print("getClientVersion",res)
     print("\n>>---------------------------------------------------------------------")

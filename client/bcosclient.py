@@ -123,7 +123,7 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"getClientVersion","params":[],"i
     "Git Commit Hash": "693a709ddab39965d9c39da0104836cfb4a72054"
   }
 }    '''
-    def  getClientVersion(self):
+    def  getNodeVersion(self):
         cmd = "getClientVersion"
         params= []
         return self.common_request(cmd,params)
