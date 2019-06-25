@@ -166,7 +166,7 @@ logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日�
 
 ### 2 体验应用-->
 
-clientdemo.py演示调用client/bcosclient.py里实现的接口，已经实现FISCO BCOS2.0的所有rpc查询接口
+clientdemo.py和getdemo.py演示调用client/bcosclient.py里实现的接口，clientdemo.py演示部署/交易/call流程，getdemo.py已经实现FISCO BCOS2.0的所有rpc查询接口
 
 ----------------------------------------------------------------------------
 ## 主要基础组件
