@@ -20,6 +20,8 @@
 安装pyenv和virtualenv完成后，参考命令：
 
 	pyenv install 3.7.3 -v 
+	
+	pyenv shell 3.7.3
 
 	pyenv rehash 
 
