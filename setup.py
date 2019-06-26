@@ -45,7 +45,7 @@ extras_require['dev'] = merge_lists(
     [
         "bumpversion>=0.5.3,<1",
         #"pytest-watch>=4.1.0,<5",
-        "wheel",
+        #"wheel",
         #"twine",
         #"ipython",
 		"cytoolz",
@@ -67,7 +67,7 @@ extras_require['dev'] = merge_lists(
 setup(
     name='bcosliteclientpy',
     version='0.6.0',
-    description="""bcosliteclientpy""",
+    description="""bcosliteclientpy is python lite client for FISCO BCOS(https://github.com/FISCO-BCOS/)""",
     long_description_markdown_filename='README.md',
     author='kentzhang',
     author_email='zkx@vip.qq.com',

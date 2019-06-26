@@ -1,3 +1,7 @@
+'''
+  @author: kentzhang
+  @date: 2019-06
+'''
 from configobj import ConfigObj
 
 config = ConfigObj("sample/contract.ini",encoding='UTF8')

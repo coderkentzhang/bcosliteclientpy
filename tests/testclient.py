@@ -1,3 +1,7 @@
+'''
+  @author: kentzhang
+  @date: 2019-06
+'''
 from client.bcosclient import (
     BcosClient,
     BcosError

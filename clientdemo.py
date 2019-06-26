@@ -1,3 +1,11 @@
+'''
+  bcosliteclientpy is a python client for FISCO BCOS2.0 (https://github.com/FISCO-BCOS/FISCO-BCOS)
+  bcosliteclientpy is free software: you can redistribute it and/or modify it under the terms of the MIT License as published by the Free Software Foundation
+  This project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE
+  Thanks for authors and contributors of eth-abi，eth-account，eth-hash，eth-keys，eth-typing，eth-utils，rlp, eth-rlp , hexbytes ...and relative projects
+  @author: kentzhang
+  @date: 2019-06
+'''
 from client.bcosclient import (
     BcosClient,
     BcosError
@@ -30,6 +38,7 @@ memo = "tx:"+result["transactionHash"]
 #把部署结果存入文件备查
 from client.contractnote import ContractNote
 ContractNote.save_address(contract_name, result["contractAddress"], int(result["blockNumber"], 16), memo)
+
 
 #发送交易，调用一个改写数据的接口
 print("\n>>sendRawTransaction:----------------------------------------------------------")
