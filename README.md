@@ -115,10 +115,11 @@ clientdemo.py和getdemo.py演示调用client/bcosclient.py里实现的接口，c
 
 ### 2 console.py 控制台应用-->
 
-
 使用 python console.py usage 查看已经实现的命令，包括创建帐号，delploy/call/sendtx，JSON RPC查询接口等
 
 ** 创建帐号后，如需要做为默认帐号使用，注意修改client_config.py的account_keyfile和account_password配置项 **
+
+可先运行 python console.py getNodeVersion 检测下客户端和节点是否正常联通，如能读到节点版本信息，那么两者连接是ok的。
 
 
 	使用说明,输入python console.py [指令 参数列表]
