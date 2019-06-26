@@ -36,77 +36,14 @@ print("\n>> user input : {}\n".format(args.cmd) )
 cmd = args.cmd[0]
 inputparams = args.cmd[1:]
 
-validcmds.append("newaccount")
-usagemsg.append('''创建一个新帐户，参数为帐户名(如alice,bob)和密码
-结果加密保存在配置文件指定的帐户目录 *如同目录下已经有同名帐户文件，旧文件会复制一个备份
-如输入了"save"参数在最后，则不做询问直接备份和写入
-newaccount [name] [password] [-f]: \ncreate a new account ,save to :[{}] (default) , the path in client_config.py:[account_keyfile_path]
-if account file has exist ,then old file will save to a backup
-if "save" arg follows,then backup file and write new without ask'''
-                .format(client_config.account_keyfile_path))
-if cmd == 'newaccount' :
-    name=inputparams[0]
-    password=inputparams[1]
-    print ("starting : {} {} {} ".format(name,name,password))
-    ac = Account.create(password)
-    print("new address :\t",ac.address)
-    print("new privkey :\t",encode_hex(ac.key) )
-    print("new pubkey :\t",ac.publickey )
-
-    stat = StatTool.begin()
-    kf = Account.encrypt(ac.privateKey, password)
-    stat.done()
-    print("encrypt use time : %.3f s"%(stat.timeused))
-    import json
-    keyfile = "{}/{}.keystore".format(client_config.account_keyfile_path,name)
-    print("save to file : [{}]".format(keyfile) )
-    forcewrite = False
-    if not os.access(keyfile, os.F_OK):
-        forcewrite = True
-    else:
-        #old file exist,move to backup file first
-        if(len(inputparams)==3 and inputparams[2] == "save"):
-            forcewrite = True
-        else:
-            str = input(">> file [{}] exist , continue (y/n): ".format(keyfile));
-            if (str.lower() == "y"):
-                forcewrite = True
-            else:
-                forcewrite = False
-                print("SKIP write new account to file,use exists account for [{}]".format(name))
-        #forcewrite ,so do backup job
-        if(forcewrite):
-            filestat = os.stat(keyfile)
-            filetime = time.strftime("%Y%m%d%H%M%S", time.localtime(filestat.st_ctime) )
-            backupfile = "{}.{}".format(keyfile,filetime)
-            print("backup [{}] to [{}]".format(keyfile,backupfile))
-            shutil.move(keyfile,backupfile)
-
-    if forcewrite:
-        with open(keyfile, "w") as dump_f:
-            json.dump(kf, dump_f)
-    print(">>-------------------------------------------------------")
-    print(">> read [{}] again after new account,address & keys in file:".format(keyfile))
-    with open(keyfile, "r") as dump_f:
-        keytext = json.load(dump_f)
-        stat = StatTool.begin()
-        privkey = Account.decrypt(keytext,password)
-        stat.done()
-        print("decrypt use time : %.3f s"%(stat.timeused))
-        ac2 = Account.from_key(privkey)
-        print("address:\t",ac2.address)
-        print("privkey:\t",encode_hex(ac2.key))
-        print("pubkey :\t",ac2.publickey)
-        print("\naccount store in file: [{}]".format(keyfile))
-        print("\n**** please remember your password !!! *****")
-
+#--------------------------------------------------------------------------------------------
+# useful functions
+#--------------------------------------------------------------------------------------------
 def default_abi_file(contractname):
     abi_file = contractname
     if not abi_file.endswith(".abi"): #default from sample/xxxx.abi,if only input a name
         abi_file = "sample/" + contractname + ".abi"
     return abi_file
-
-
 
 def fill_params(params,paramsname):
     index = 0
@@ -197,7 +134,77 @@ def print_parse_transaction(tx,contractname,parser=None):
 #---------------------------------------------------------------------------
 #start command functions
 
+#--------------------------------------------------------------------------------------------
+# console cmd entity
+#--------------------------------------------------------------------------------------------
+validcmds.append("newaccount")
+usagemsg.append('''创建一个新帐户，参数为帐户名(如alice,bob)和密码
+结果加密保存在配置文件指定的帐户目录 *如同目录下已经有同名帐户文件，旧文件会复制一个备份
+如输入了"save"参数在最后，则不做询问直接备份和写入
+newaccount [name] [password] [-f]: \ncreate a new account ,save to :[{}] (default) , the path in client_config.py:[account_keyfile_path]
+if account file has exist ,then old file will save to a backup
+if "save" arg follows,then backup file and write new without ask'''
+                .format(client_config.account_keyfile_path))
+if cmd == 'newaccount' :
+    name=inputparams[0]
+    password=inputparams[1]
+    print ("starting : {} {} {} ".format(name,name,password))
+    ac = Account.create(password)
+    print("new address :\t",ac.address)
+    print("new privkey :\t",encode_hex(ac.key) )
+    print("new pubkey :\t",ac.publickey )
 
+    stat = StatTool.begin()
+    kf = Account.encrypt(ac.privateKey, password)
+    stat.done()
+    print("encrypt use time : %.3f s"%(stat.timeused))
+    import json
+    keyfile = "{}/{}.keystore".format(client_config.account_keyfile_path,name)
+    print("save to file : [{}]".format(keyfile) )
+    forcewrite = False
+    if not os.access(keyfile, os.F_OK):
+        forcewrite = True
+    else:
+        #old file exist,move to backup file first
+        if(len(inputparams)==3 and inputparams[2] == "save"):
+            forcewrite = True
+        else:
+            str = input(">> file [{}] exist , continue (y/n): ".format(keyfile));
+            if (str.lower() == "y"):
+                forcewrite = True
+            else:
+                forcewrite = False
+                print("SKIP write new account to file,use exists account for [{}]".format(name))
+        #forcewrite ,so do backup job
+        if(forcewrite):
+            filestat = os.stat(keyfile)
+            filetime = time.strftime("%Y%m%d%H%M%S", time.localtime(filestat.st_ctime) )
+            backupfile = "{}.{}".format(keyfile,filetime)
+            print("backup [{}] to [{}]".format(keyfile,backupfile))
+            shutil.move(keyfile,backupfile)
+
+    if forcewrite:
+        with open(keyfile, "w") as dump_f:
+            json.dump(kf, dump_f)
+    print(">>-------------------------------------------------------")
+    print(">> read [{}] again after new account,address & keys in file:".format(keyfile))
+    with open(keyfile, "r") as dump_f:
+        keytext = json.load(dump_f)
+        stat = StatTool.begin()
+        privkey = Account.decrypt(keytext,password)
+        stat.done()
+        print("decrypt use time : %.3f s"%(stat.timeused))
+        ac2 = Account.from_key(privkey)
+        print("address:\t",ac2.address)
+        print("privkey:\t",encode_hex(ac2.key))
+        print("pubkey :\t",ac2.publickey)
+        print("\naccount store in file: [{}]".format(keyfile))
+        print("\n**** please remember your password !!! *****")
+
+
+#--------------------------------------------------------------------------------------------
+# console cmd entity
+#--------------------------------------------------------------------------------------------
 validcmds.append("deploy")
 usagemsg.append('''部署合约,合约来自编译后的bin文件。如给出'save'参数，新地址会写入本地记录文件
 deploy [contract_binary_file] [save]\ndeploy contract from a binary file,eg: deploy sample/SimpleInfo.bin
@@ -221,6 +228,10 @@ if cmd=="deploy":
         print("\nNOTE : if want to save new address as last addres for (call/sendtx)\nadd 'save' to cmdline and run again")
     sys.exit(0)
 
+
+#--------------------------------------------------------------------------------------------
+# console cmd entity
+#--------------------------------------------------------------------------------------------
 validcmds.append("call")
 usagemsg.append('''call合约的一个只读接口
 call [contractname] [address] [func]  [args...] 
@@ -249,6 +260,9 @@ if cmd=="call":
     result = client.call(address,contract_abi,funcname,args)
     print("call result: ",result )
 
+#--------------------------------------------------------------------------------------------
+# console cmd entity
+#--------------------------------------------------------------------------------------------
 validcmds.append("sendtx")
 usagemsg.append('''发送交易调用指定合约的接口，交易如成功，结果会写入区块和状态
 sendtx [contractname]  [address] [func] [args...] 
@@ -285,7 +299,9 @@ if cmd=="sendtx":
 
 
 
-
+#--------------------------------------------------------------------------------------------
+# console cmd entity
+#--------------------------------------------------------------------------------------------
 getcmds=dict()
 getcmds["getNodeVersion"]=[]
 getcmds["getBlockNumber"]=[]
@@ -314,7 +330,9 @@ getcmds["getSystemConfigByKey"]=[["str"],"name : 配置参数名(system param na
 
 
 
-
+#--------------------------------------------------------------------------------------------
+# console cmd entity
+#--------------------------------------------------------------------------------------------
 usagemsg.append('''各种get接口，查询节点的各种状态（不一一列出，可用list指令查看接口列表和参数名）
 all the 'get' command for JSON RPC\neg: [getBlockByNumber 10 true].
 use 'list' cmd to show all getcmds ''')
@@ -385,12 +403,18 @@ if cmd == "list":
         print ("{} ): {}\t{}".format(i,cmd,hint))
         print("----------------------------------------------------------------------------------------")
 
+#--------------------------------------------------------------------------------------------
+# console cmd entity
+#--------------------------------------------------------------------------------------------
 validcmds.append("int")
 usagemsg.append('''输入一个十六进制的数字，转为十进制（考虑到json接口里很多数字都是十六进制的，所以提供这个功能）
 int [hexnum]: convert a hex str to int ,eg: int 0x65''')
 if cmd == 'int':
     print(int(inputparams[0],16))
 
+#--------------------------------------------------------------------------------------------
+# console cmd entity
+#--------------------------------------------------------------------------------------------
 validcmds.append("txinput")
 usagemsg.append('''复制一段来自transaction的inputdata(十六进制字符串)，指定合约名，则可以自动解析（合约的abi文件应存在指定目录下）
 txinput [contractname] [inputdata(inhex)]
@@ -398,31 +422,34 @@ parse the transaction input data by  contractname，eg: txinput SimpleInfo [txin
 if cmd =="txinput":
     contractname = inputparams[0]
     inputdata = inputparams[1]
-
     dataParser = DatatypeParser(default_abi_file(contractname) )
     #print(dataParser.func_abi_map_by_selector)
     result = dataParser.parse_transaction_input(inputdata)
     print("\nabifile : ",default_abi_file(contractname))
     print("parse result: {}".format(result))
 
+#--------------------------------------------------------------------------------------------
+# console cmd entity
+#--------------------------------------------------------------------------------------------
 validcmds.append("checkaddr")
 usagemsg.append('''将普通地址转为自校验地址,自校验地址使用时不容易出错
 checkaddr [address]: change address to checksum address according EIP55:
 to_checksum_address: 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc -> 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
 ''')
 if cmd == "checkaddr":
-
     address = inputparams[0]
     result = to_checksum_address(address)
     print("to_checksum_address:")
     print("{} -->\n{}".format(address,result) )
 
+#--------------------------------------------------------------------------------------------
+# console cmd entity
+#--------------------------------------------------------------------------------------------
 def printusage():
     index = 0
     for msg in usagemsg:
         index+=1
         print("{}): {}\n".format(index,msg) )
-
 
 validcmds.append("usage")
 if cmd == "usage":
@@ -433,7 +460,9 @@ python console.py [cmd args]
     printusage()
 
 
-
+#--------------------------------------------------------------------------------------------
+# console cmd entity
+#--------------------------------------------------------------------------------------------
 if (cmd not in validcmds) and  (cmd not in getcmds):
     printusage()
     print("console cmd  [{}]  not implement yet,see the usage\n".format(cmd))
