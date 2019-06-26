@@ -1,6 +1,7 @@
 #!python
 import argparse
 import sys
+import shutil
 import time
 from client.stattool import StatTool
 from configobj import ConfigObj
@@ -22,40 +23,73 @@ parser = argparse.ArgumentParser(description='FISCO BCOS 2.0 lite client @python
 parser.add_argument('cmd',    nargs="+" ,       # 添加参数
                     help='the command for console')
 usagemsg = []
+validcmds = []
 args = parser.parse_args()
-print("user input : ",args.cmd)
+print("\n>> user input : {}\n".format(args.cmd) )
 cmd = args.cmd[0]
 inputparams = args.cmd[1:]
 
-usagemsg.append("newaccount [name] [password] : \ncreate a new account ,save to :[{}],(default) , the path spec in client_config.py:[account_keyfile_path]".format(client_config.account_keyfile_path))
+validcmds.append("newaccount")
+usagemsg.append('''创建一个新帐户，参数为帐户名(如alice,bob)和密码
+结果加密保存在配置文件指定的帐户目录 *如同目录下已经有同名帐户文件，旧文件会复制一个备份
+如输入了"save"参数在最后，则不做询问直接备份和写入
+newaccount [name] [password] [-f]: \ncreate a new account ,save to :[{}] (default) , the path in client_config.py:[account_keyfile_path]
+if account file has exist ,then old file will save to a backup
+if "save" arg follows,then backup file and write new without ask'''
+                .format(client_config.account_keyfile_path))
 if cmd == 'newaccount' :
     name=inputparams[0]
     password=inputparams[1]
     print ("starting : {} {} {} ".format(name,name,password))
     ac = Account.create(password)
-    print("new address : ",ac.address)
+    print("new address :\t",ac.address)
+    print("new privkey :\t",encode_hex(ac.key) )
+    print("new pubkey :\t",ac.publickey )
+
     stat = StatTool.begin()
     kf = Account.encrypt(ac.privateKey, password)
     stat.done()
-    print("encrypt use time : {}ms".format(stat.timeused))
+    print("encrypt use time : %.3f s"%(stat.timeused))
     import json
     keyfile = "{}/{}.keystore".format(client_config.account_keyfile_path,name)
     print("save to file : [{}]".format(keyfile) )
-    with open(keyfile, "w") as dump_f:
-        json.dump(kf, dump_f)
+    forcewrite = False
+    if not os.access(keyfile, os.F_OK):
+        forcewrite = True
+    else:
+        #old file exist,move to backup file first
+        if(len(inputparams)==3 and inputparams[2] == "save"):
+            forcewrite = True
+        else:
+            str = input(">> file [{}] exist , continue (y/n): ".format(keyfile));
+            if (str.lower() == "y"):
+                forcewrite = True
+            else:
+                forcewrite = False
+                print("SKIP write new account to file,use exists account for [{}]".format(name))
+        #forcewrite ,so do backup job
+        if(forcewrite):
+            filestat = os.stat(keyfile)
+            filetime = time.strftime("%Y%m%d%H%M%S", time.localtime(filestat.st_ctime) )
+            backupfile = "{}.{}".format(keyfile,filetime)
+            print("backup [{}] to [{}]".format(keyfile,backupfile))
+            shutil.move(keyfile,backupfile)
 
+    if forcewrite:
+        with open(keyfile, "w") as dump_f:
+            json.dump(kf, dump_f)
+    print(">>-------------------------------------------------------")
+    print(">> read [{}] again after new account,address & keys in file:".format(keyfile))
     with open(keyfile, "r") as dump_f:
         keytext = json.load(dump_f)
         stat = StatTool.begin()
         privkey = Account.decrypt(keytext,password)
-        stat.end()
-        print("decrypt use time : {}ms".format(stat.timeused))
+        stat.done()
+        print("decrypt use time : %.3f s"%(stat.timeused))
         ac2 = Account.from_key(privkey)
-        print("-------------->>")
-
-        print("address:",ac2.address)
-        print("privkey:",encode_hex(ac2.key))
-        print("pubkey :",ac2.publickey)
+        print("address:\t",ac2.address)
+        print("privkey:\t",encode_hex(ac2.key))
+        print("pubkey :\t",ac2.publickey)
         print("\naccount store in file: [{}]".format(keyfile))
         print("\n**** please remember your password !!! *****")
 
@@ -133,10 +167,11 @@ def format_args_by_types(inputparams,types):
             newparam.append(hex(int(v,10)))
             continue
         if type=="bool":
-            if v.lower=="true":
+            if v.lower()=="true":
                 newparam.append(True)
             else:
                 newparam.append(False)
+
             continue
     #print(newparam)
     return newparam
@@ -156,9 +191,10 @@ def print_parse_transaction(tx,contractname,parser=None):
 #start command functions
 
 
-
-
-usagemsg.append("deploy [abi binary file] save\ndeploy contract from a binary file,if 'save' spec, so save addres to file")
+validcmds.append("deploy")
+usagemsg.append('''部署合约,合约来自编译后的bin文件。如给出'save'参数，新地址会写入本地记录文件
+deploy [contract_binary_file] [save]\ndeploy contract from a binary file,eg: deploy sample/SimpleInfo.bin
+if 'save' in args, so save addres to file''')
 if cmd=="deploy":
     '''deploy abi bin file'''
     abibinfile=inputparams[0]
@@ -178,7 +214,9 @@ if cmd=="deploy":
         print("\nNOTE : if want to save new address as last addres for (call/sendtx)\nadd 'save' to cmdline and run again")
     sys.exit(0)
 
-usagemsg.append('''call [contractname] [address] [func]  [args...] 
+validcmds.append("call")
+usagemsg.append('''call合约的一个只读接口
+call [contractname] [address] [func]  [args...] 
 eg: call SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC getbalance1 11
 if address is "last" ,then load last address from :{}
 eg: call SimpleInfo last getall
@@ -204,9 +242,10 @@ if cmd=="call":
     result = client.call(address,contract_abi,funcname,args)
     print("call result: ",result )
 
-
-usagemsg.append('''sendtx [contractname]  [address] [func] [args...] 
-eg: sendtx SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC set 'test' 100 '0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
+validcmds.append("sendtx")
+usagemsg.append('''发送交易调用指定合约的接口，交易如成功，结果会写入区块和状态
+sendtx [contractname]  [address] [func] [args...] 
+eg: sendtx SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC set alice 100 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
 if address is "last" ,then load last address from :{}
 eg: sendtx SimpleInfo last set 'test' 100 '0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
 '''.format(client_config.contract_info_file))
@@ -241,7 +280,7 @@ if cmd=="sendtx":
 
 
 getcmds=dict()
-getcmds["getClientVersion"]=[]
+getcmds["getNodeVersion"]=[]
 getcmds["getBlockNumber"]=[]
 getcmds["getPbftView"]=[]
 getcmds["getSealerList"]=[]
@@ -252,42 +291,66 @@ getcmds["getPeers"]=[]
 getcmds["getGroupPeers"]=[]
 getcmds["getNodeIDList"]=[]
 getcmds["getGroupList"]=[]
-getcmds["getBlockByHash"]=["str","bool"]
-getcmds["getBlockByNumber"]=["hex","bool"]
-getcmds["getBlockHashByNumber"]=["hex"]
-getcmds["getTransactionByHash"]=["str"]
-getcmds["getTransactionByBlockHashAndIndex"]=["str","hex"]
-getcmds["getTransactionByBlockNumberAndIndex"]=["hex","hex"]
-getcmds["getTransactionReceipt"]=["str"]
+getcmds["getBlockByHash"]=[["str","bool"],"hash : 区块Hash(hash string),是否查询交易数据(true/false for with transaction data)"]
+getcmds["getBlockByNumber"]=[["hex","bool"],"number bool : 区块高度(number),是否查询交易数据(true/false for with transaction data)"]
+getcmds["getBlockHashByNumber"]=[["hex"],"number : 区块高度(number)"]
+getcmds["getTransactionByHash"]=[["str"],"hash : 交易Hash(hash string)"]
+getcmds["getTransactionByBlockHashAndIndex"]=[["str","hex"],"blockhash index : 区块Hash(hash string), 交易在区块里的位置(index)"]
+getcmds["getTransactionByBlockNumberAndIndex"]=[["hex","hex"],"blocknumber index : 区块高度(number),交易在区块里的位置(index)"]
+getcmds["getTransactionReceipt"]=[["str"],"hash: 交易hash(hash string)"]
 getcmds["getPendingTransactions"]=[]
 getcmds["getPendingTxSize"]=[]
 getcmds["getCode"]=["str"]
 getcmds["getTotalTransactionCount"]=[]
-getcmds["getSystemConfigByKey"]=["str"]
+getcmds["getSystemConfigByKey"]=[["str"],"name : 配置参数名(system param name),eg:tx_count_limit"]
 
 
 
 
 
-usagemsg.append('''all the 'get' command for JSON RPC\neg: [getBlockyByNumber 10].
+usagemsg.append('''各种get接口，查询节点的各种状态（不一一列出，可用list指令查看接口列表和参数名）
+all the 'get' command for JSON RPC\neg: [getBlockByNumber 10 true].
 use 'list' cmd to show all getcmds ''')
 if cmd in getcmds:
-    types = getcmds[cmd]
-    fmtparams = format_args_by_types(inputparams, types)
-    print("is a get :{},params:{}".format(cmd,fmtparams) )
+    types=[]
+    if len(getcmds[cmd]) > 0:
+        types = getcmds[cmd][0]
+    if "getBlockBy" in cmd:
+        #make a default for getBlockBy...
+        if(len(inputparams) == 1):
+            inputparams.append("false")
+            print("**for getBlockby , missing 2nd arg ,defaut gave:don't retriev transaction detail\n")
+
+    try:
+        fmtargs = format_args_by_types(inputparams, types)
+    except Exception as e:
+        cmdinfo = getcmds[cmd]
+        memo=" no args"
+        if(len(cmdinfo)==2):
+            memo =" {} ".format(cmdinfo[1])
+        print("args not match,should be : {} {},break\n".format(cmd,memo) )
+        sys.exit("please try again...")
+
+
+    print("is a get :{},params:{}".format(cmd,fmtargs) )
     params = [client.groupid]
-    params.extend(fmtparams)
+    params.extend(fmtargs)
     #print(params)
-    result  = client.common_request(cmd,params)
-    print(json.dumps(result,indent=4))
+    sendcmd = cmd
+    if cmd=="getNodeVersion": #getNodeVersion is a alias for getClientVersion
+        sendcmd = "getClientVersion"
+    result  = client.common_request(sendcmd,params)
+    print(">> get result:",json.dumps(result,indent=4))
+
     if cmd == "getTransactionReceipt":
         if len(inputparams) == 2:
             contractname = inputparams[1]
-
             print_receipt_logs_and_txoutput(result,contractname)
 
+    if cmd == "getBlockNumber":
+        print("blocknumber is {}".format(int(result,16)))
 
-    if "getBlock" in cmd:
+    if "getBlockBy" in cmd:
         blocknum = int(result["number"],16)
         print(">> blocknumber : ",blocknum)
         print(">> blockhash   : ", result["hash"])
@@ -301,21 +364,30 @@ if cmd in getcmds:
         if abifile!=None:
             print_parse_transaction(result,abifile)
 
-
-usagemsg.append("list: list all getcmds (getBlock...getTransaction...getReceipt..getOthers)")
+validcmds.append("list")
+usagemsg.append('''列出所有支持的get接口名和参数
+list: list all getcmds (getBlock...getTransaction...getReceipt..getOthers)''')
 if cmd == "list":
+    i = 0
     print("query commands:")
     for cmd in getcmds:
-        print ("{} : {}".format(cmd,getcmds[cmd]))
+        hint = "无参数(no args)"
+        if len(getcmds[cmd])==2:
+            hint = getcmds[cmd][1]
+        i=i+1
+        print ("{} ): {}\t{}".format(i,cmd,hint))
+        print("----------------------------------------------------------------------------------------")
 
-
-usagemsg.append("int [hexnum]: convert a hex str to int ,eg: int 0x65")
+validcmds.append("int")
+usagemsg.append('''输入一个十六进制的数字，转为十进制（考虑到json接口里很多数字都是十六进制的，所以提供这个功能）
+int [hexnum]: convert a hex str to int ,eg: int 0x65''')
 if cmd == 'int':
     print(int(inputparams[0],16))
 
-
-usagemsg.append('''txinput [abifile] [inputdata(inhex)]
-parse the transaction input data by spec abifile，eg: txinput sample/SimpleInfo.abi [txinputdata]''')
+validcmds.append("txinput")
+usagemsg.append('''复制一段来自transaction的inputdata(十六进制字符串)，指定合约名，则可以自动解析（合约的abi文件应存在指定目录下）
+txinput [contractname] [inputdata(inhex)]
+parse the transaction input data by  contractname，eg: txinput SimpleInfo [txinputdata]''')
 if cmd =="txinput":
     contractname = inputparams[0]
     inputdata = inputparams[1]
@@ -326,8 +398,9 @@ if cmd =="txinput":
     print("\nabifile : ",default_abi_file(contractname))
     print("parse result: {}".format(result))
 
-
-usagemsg.append('''checkaddr [address]: change address to checksum address according EIP55:
+validcmds.append("checkaddr")
+usagemsg.append('''将普通地址转为自校验地址,自校验地址使用时不容易出错
+checkaddr [address]: change address to checksum address according EIP55:
 to_checksum_address: 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc -> 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
 ''')
 if cmd == "checkaddr":
@@ -337,10 +410,23 @@ if cmd == "checkaddr":
     print("to_checksum_address:")
     print("{} -->\n{}".format(address,result) )
 
-
-if cmd == "usage":
-    print("usage of console (FISCO BCOS 2.0 lite client @python):")
+def printusage():
     index = 0
     for msg in usagemsg:
         index+=1
-        print("\n{}): {}".format(index,msg) )
+        print("{}): {}\n".format(index,msg) )
+
+
+validcmds.append("usage")
+if cmd == "usage":
+    print('''使用说明,输入python console.py [指令 参数列表]
+Usage of console (FISCO BCOS 2.0 lite client @python):
+python console.py [cmd args]
+''')
+    printusage()
+
+
+
+if (cmd not in validcmds) and  (cmd not in getcmds):
+    printusage()
+    print("console cmd  [{}]  not implement yet,see the usage\n".format(cmd))

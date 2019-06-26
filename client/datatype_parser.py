@@ -19,10 +19,10 @@ from utils.abi import  (
     abi_to_signature,
     get_abi_output_types,
     get_fn_abi_types,
-    get_fn_abi_types_str,
+    get_fn_abi_types_single,
     exclude_indexed_event_inputs,
-    exclude_indexed_event_inputs_to_array,
-    exclude_indexed_event_inputs_to_str,
+    exclude_indexed_event_inputs_to_abi,
+    exclude_indexed_event_inputs_to_single,
     data_tree_map)
 
 class DatatypeParser:
@@ -89,7 +89,7 @@ class DatatypeParser:
             if(eventabi == None):
                 continue
             #args_abi = get_fn_abi_types(eventabi,'inputs')
-            argslist = exclude_indexed_event_inputs_to_str(eventabi)
+            argslist = exclude_indexed_event_inputs_to_single(eventabi)
             #print(argslist)
             result = decode_single(argslist,decode_hex(log['data']))
             #print(result)
@@ -108,7 +108,7 @@ class DatatypeParser:
             return None
         func_abi = self.func_abi_map_by_selector[selector]
         #print(func_abi)
-        args_abi = get_fn_abi_types_str(func_abi,"inputs")
+        args_abi = get_fn_abi_types_single(func_abi, "inputs")
         args = decode_single(args_abi,decode_hex(argsdata) )
         result= dict()
         result['name'] = func_abi["name"]
@@ -122,7 +122,7 @@ class DatatypeParser:
         if name not in self.func_abi_map_by_name:
             return None
         func_abi = self.func_abi_map_by_name[name]
-        output_args = get_fn_abi_types_str(func_abi,"outputs")
+        output_args = get_fn_abi_types_single(func_abi, "outputs")
         #print(output_args)
         result = decode_single(output_args,decode_hex(outputdata) )
         return result

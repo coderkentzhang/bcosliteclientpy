@@ -1,13 +1,17 @@
+# bclosliteclient项目说明
+
 本项目采用Python开发，用于和开源的金融级区块链底层平台FISCO BCOS( https://www.github.com/fisco-bcos/ ) 建立JSONRPC协议的通信。支持版本为FISCO BCOS 2.0 RC1~RC3以及后续版本。
 
 意图是构建一个代码尽量少，逻辑尽情轻，层级尽量浅，容易理解，可快速复用二次开发的python语言的客户端，所以命名内嵌了"lite"。
 
-支持所有FISCO BCOS2.0 JSON RPC 接口，支持交易输入输出、event log等绝大部分的abi数据拼装和解析，支持直观的keystore账户管理(创建和加载等)，支持部署合约后保存最新地址和记录部署历史，基本上是一个简单而完整的fisco bcos 2.0客户端。
+封装的接口支持所有FISCO BCOS2.0 JSON RPC定义，支持交易输入输出、event log等绝大部分的abi数据拼装和解析，支持直观的keystore账户管理(创建和加载等)，支持部署合约后保存最新地址和记录部署历史，基本上是一个简单而完整的fisco bcos 2.0客户端SDK。
 
-已经适配的python版本:python3.7.3
+实现了一个命令行的console交互，简单配置后可以和节点通过JSON RPC接口通信，创建帐号、部署合约、发送交易查询信息。
+
+已经适配的python版本:python 3.6.x, 3.7.x
 
 ----------------------------------------------------------------------------
-linux环境准备：
+## linux环境准备：
 
 安装和使用，参见本目录下的 [linux_python_setup.md](./linux_python_setup.md)
 
@@ -16,18 +20,22 @@ linux环境准备：
 安装pyenv和virtualenv完成后，参考命令：
 
 	pyenv install 3.7.3 -v 
+	
+	pyenv shell 3.7.3
 
 	pyenv rehash 
 
 	pyenv virtualenv 3.7.3 blc
 	
 	pyenv activate blc
+	
+	pip install --upgrade pip
 
 进入名为pytho 3.7.3 , blc的开发运行环境（blc这个名可替换）
 
 ----------------------------------------------------------------------------
 
-windows环境准备：
+## windows环境准备：
 
 1.安装python3.7.3 https://www.python.org/
 
@@ -43,30 +51,32 @@ windows环境准备：
 
 4.运行：blc\Scripts\activate.bat
 
+5.更新pip: pip install --upgrade pip
+
 可以看到命令行前面多了（blc），独立的名为blc的python环境建立完成
 
 ----------------------------------------------------------------------------
 
 
-获取项目代码：
+## 获取项目代码：
 
 	git clone https://github.com/coderkentzhang/bcosliteclientpy.git
 	
-目前代码在dev分支,建议在dev状态下运行体验，进行二次开发。
+目前代码在dev分支,建议在dev状态下运行console体验，进行二次开发。
 
 依次运行：
-
-	git checkout dev
 	
 	cd bcosliteclientpy
 	
+	git checkout dev
+	
 	pip install -e .[dev]
 
-安装依赖库(依赖库定义见setup.py文件)。
+以上为获取分支安装依赖库(依赖库定义见setup.py文件)。
 
-修改配置文件。将client_config.py.template复制为client_config.py，或者直接将template后缀去掉。修改client_config.py里的值：
+修改配置文件。将client_config.py.template复制为client_config.py，修改client_config.py里的值：
 
-    remote_rpcurl="http://127.0.0.1:8545" #节点的rpc端口，和要通信的节点*必须*一致
+    remote_rpcurl="http://127.0.0.1:8545" #节点的JSON RPC端口，对应FISCO BCOS配置文件config.ini里的 [rpc]jsonrpc_listen_port项
 	
     contract_info_file="bin/accounts/contract.ini" #保存已部署合约信息的文件
 	
@@ -80,67 +90,108 @@ windows环境准备：
 	
     groupid = 1 #群组ID，和要通信的节点*必须*一致，如和其他群组通信，修改这一项，或者设置bcosclient.py里对应的成员变量
 	
+	logdir = bin/logs    #默认在此目录下生成日志，此目录必须存在
+	
 修改配置后，运行体验
 
 clientdemo.py会加载默认演示合约sample/SimpleInfo.sol以及其abi,bin，进行部署，接口调用，解析返回信息等。可以参考clientdemo.py，编写其他逻辑。
 
 	python clientdemo.py
 
-***如报告Crypto包不存在，进入virtualenv的目录如d:\python_env\blc\lib\site-packages\,将小写的crypto目录名第一个字母改为大写Crypto （这貌似是windows环境的一个坑 ***
+** 如报告Crypto包不存在，进入virtualenv的目录如d:\python_env\blc\lib\site-packages\,将小写的crypto目录名第一个字母改为大写Crypto （这貌似是windows环境的一个坑) **
+
+** 由于不同环境操作系统依赖，python版本，网络情况有所不同，如自动安装依赖部分不成功，可通过pip install [指定模块]的方式尝试安装 **
+
+
+logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日志，包括客户端日志和统计日志两种，默认级别为DEBUG
 
 ----------------------------------------------------------------------------
 
-1 可执行模块-->
+## 本项目提供可执行的应用如下，均基于client/bcosclient.py基础组件建立：
 
-console.py 控制台小程序
+### 1 体验应用-->
+
+clientdemo.py和getdemo.py演示调用client/bcosclient.py里实现的接口，clientdemo.py演示部署/交易/call流程，getdemo.py已经实现FISCO BCOS2.0的所有rpc查询接口
+
+### 2 console.py 控制台应用-->
 
 使用 python console.py usage 查看已经实现的命令，包括创建帐号，delploy/call/sendtx，JSON RPC查询接口等
 
-**创建帐号后，如需要做为默认帐号使用，注意修改client_config.ini
+** 创建帐号后，如需要做为默认帐号使用，注意修改client_config.py的account_keyfile和account_password配置项 **
 
-logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日志，默认级别为DEBUG
+可先运行 python console.py getNodeVersion 检测下客户端和节点是否正常联通，如能读到节点版本信息，那么两者连接是ok的。
 
-	usage of console (FISCO BCOS 2.0 lite client @python):
 
-	1): newaccount [name] [password] :
-	create a new account ,save to :[bin/accounts],(default) ， the path spec in client_config.py:[account_keyfile_path]
+	使用说明,输入python console.py [指令 参数列表]
+	Usage of console (FISCO BCOS 2.0 lite client @python):
+	python console.py [cmd args]
 
-	2): deploy [abi binary file] save
-	deploy contract from a binary file,if 'save' spec, so save addres to file
+	1): 创建一个新帐户，参数为帐户名(如alice,bob)和密码
+	结果加密保存在配置文件指定的帐户目录 *如同目录下已经有同名帐户文件，旧文件会复制一个备份
+	如输入了"save"参数在最后，则不做询问直接备份和写入
+	newaccount [name] [password] [save]: 
+	create a new account ,save to :[bin/accounts] (default) , the path in client_config.py:[account_keyfile_path]
+	if account file has exist ,then old file will save to a backup
+	if "save" arg follows,then backup file and write new without ask
 
-	3): call [contractname] [address] [func]  [args...]
+	2): 部署合约,合约来自编译后的bin文件。如给出'save'参数，新地址会写入本地记录文件
+	deploy [contract_binary_file] [save]
+	deploy contract from a binary file,eg: deploy sample/SimpleInfo.bin
+	if 'save' in args, so save addres to file
+
+	3): call合约的一个只读接口
+	call [contractname] [address] [func]  [args...]
 	eg: call SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC getbalance1 11
 	if address is "last" ,then load last address from :bin/contract.ini
 	eg: call SimpleInfo last getall
 
 
-	4): sendtx [contractname]  [address] [func] [args...]
-	eg: sendtx SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC set 'test' 100 '0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
+	4): 发送交易调用指定合约的接口，交易如成功，结果会写入区块和状态
+	sendtx [contractname]  [address] [func] [args...]
+	eg: sendtx SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC set alice 100 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
 	if address is "last" ,then load last address from :bin/contract.ini
 	eg: sendtx SimpleInfo last set 'test' 100 '0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
 
 
-	5): all the 'get' command for JSON RPC
-	eg: [getBlockyByNumber 10].
+	5): 各种get接口，查询节点的各种状态（不一一列出，可用list指令查看接口列表和参数名）
+	all the 'get' command for JSON RPC
+	eg: [getBlockByNumber 10 true].
 	use 'list' cmd to show all getcmds
 
-	6): list: list all getcmds (getBlock...getTransaction...getReceipt..getOthers)
+	6): 列出所有支持的get接口名和参数
+	list: list all getcmds (getBlock...getTransaction...getReceipt..getOthers)
 
-	7): int [hexnum]: convert a hex str to int ,eg: int 0x65
+	7): 输入一个十六进制的数字，转为十进制（考虑到json接口里很多数字都是十六进制的，所以提供这个功能）
+	int [hexnum]: convert a hex str to int ,eg: int 0x65
 
-	8): txinput [abifile] [inputdata(inhex)]
-	parse the transaction input data by spec abifile，eg: txinput sample/SimpleInfo.abi [txinputdata]
+	8): 复制一段来自transaction的inputdata(十六进制字符串)，指定合约名，则可以自动解析（合约的abi文件应存在指定目录下）
+	txinput [contractname] [inputdata(inhex)]
+	parse the transaction input data by  contractname，eg: txinput SimpleInfo [txinputdata]
 
-	9): checkaddr [address]: change address to checksum address according EIP55:
+	9): 将普通地址转为自校验地址,自校验地址使用时不容易出错
+	checkaddr [address]: change address to checksum address according EIP55:
 	to_checksum_address: 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc -> 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
 
 
+----------------------------------------------------------------------------
+## 主要基础组件
 
-2 可执行模块-->
+client/bcosclient.py客户端SDK，封装了加载配置，JSON RPC接口等。
 
-clientdemo.py演示调用client/bcosclient.py里实现的接口，已经实现FISCO BCOS2.0的所有rpc查询接口（截止2019.06 FISCO BCOS 2.0rc3版本）
+client/bcostransaction.py 根据bcos对交易数据结构的定义，增加字段，修改拼装方法，实现交易编码.client/transaction.py为原以太坊交易格式的实现。
 
-实现的发送交易接口为：
+eth_account/account.py 实现帐户的创建，保存，加载等（加密和解密帐户keystore文件约需1s以上）
+
+client/contratnote.py 采用ini配置文件格式保存合约的最新地址和历史地址，以便加载（如console命令里可以用(合约名 last)指代某个合约最新部署的地址）
+
+client/datatype_parser.py 管理abi，用方法名和4字节selector操作方法的abi，提供一系列数据解析接口，解析receipt log,tx input/output等
+
+client/clientlogger.py logger定义，目前包括客户端日志和统计日志两种
+
+client/stattool.py 一个简单的统计数据收集和打印日志的工具类
+
+
+bcosclient.py 里实现的发送交易接口为：
 
     deploy：部署合约
 
@@ -152,12 +203,17 @@ clientdemo.py演示调用client/bcosclient.py里实现的接口，已经实现FI
 
 sendRawTransaction这两个方法可用于所有已知abi的合约，传入abi定义，方法名，正确的参数列表，即可发送交易。交易由BcosClient里加载的账号进行签名。
 
+查询方法均为get开头，输入参数根据查询的内容略有不同，如getBlockByNum为“”高度”和"是否加载交易列表"两个参数。
+
 ----------------------------------------------------------------------------
 
-解析数据采用datatypes/datatypeparse.py里实现的DatatypeParser对象的方法。
+## 解析数据
 
+面向transaction，receipt，可采用datatypes/datatypeparse.py里实现的DatatypeParser对象的方法。
 
 主要方法有：
+
+    parse_abi: 将abi文件里的function和event解析为字典索引，其中function的索引方式为name和4字节selector两种，供后续查询.func_abi_map_by_selector,func_abi_map_by_name,event_abi_map这几个dict即为字典索引对象     
 
     parse_transaction_input: 用于transaction，用于查询交易后解析input数据（方法+参数）
 
@@ -165,7 +221,36 @@ sendRawTransaction这两个方法可用于所有已知abi的合约，传入abi�
 
     parse_event_logs：用于receipt，解析eventlog数组，增加eventname，eventdata两个数据
 
+
+和abi基础数据结构操作有关的方法分布在多个模块, 详细实现可查询代码
+
+	from eth_abi import(
+		encode_single,  #输入abi定义如("unit256","string")，进行数据编码
+		encode_abi, #即将废弃,输入类型为["unit256","string"],都用encode/decode_single就好
+		decode_single, #对应encode_singile ，对数据进行解码
+		decode_abi  #即将废弃
+		)
+		
+	from eth_utils import (
+		function_signature_to_4byte_selector, #输入方法abi，输出4字节的selector
+		event_abi_to_log_topic,  #输入event的abi，输出event里的topic串
+		encode_hex,decode_hex #16进制串编解码
+		)
+
+	from utils.abi import  (
+		filter_by_type, #通过类型选择一组元素，如"function","event"等
+		abi_to_signature, #输入方法名，输出可读的方法定义如 "set(uint256,string)"
+		get_abi_output_types, #获取abi的输出定义
+		get_fn_abi_types, #获取abi的输入输出定义,适配encode_abi/decode_abi，用参数“inputs” "outpus"选择
+		get_fn_abi_types_single,#获取abi的输入输出定义，适配encode_single/decde_single，用参数“inputs” "outpus"选择
+		exclude_indexed_event_inputs, #排除event定义中声明为indexed的参数，这些参数不进入logs数据里只存在于topics里
+		exclude_indexed_event_inputs_to_abi, #声明为indexed之外的参数，封装为encode_abi/decode_abi接受的参数
+		exclude_indexed_event_inputs_to_single,#声明为indexed之外的参数，封装为encode_single/decode_single接受的参数
+		)
+
 ----------------------------------------------------------------------------
+
+## 开源说明
 
 此项目源自开源，响应开源，可在符合license前提下自由使用和分发。其中eth-abi，eth-account，eth-hash，eth-keys，eth-typing，eth-utils，rlp, eth-rlp , hexbytes等都为开源项目，各子目录都保留了license,README，向原作者（们）致谢！
 (是的，兼容evm，复用了abi/rlp编码，但底层项目实际上整个架构已经重写)
@@ -174,4 +259,4 @@ sendRawTransaction这两个方法可用于所有已知abi的合约，传入abi�
 以上引用的代码有修订，为了便于修改，所以将这些项目并入代码目录，不采用发布包的方式引用。
 
 
-本工程从开始准备到本文档完成历时五天，在工作之余的碎片时间和深夜完成，得益于开源社区既有代码的基础以及python语言的开发效率,所写代码不多，主要是发掘可用api和进行整理、重构、胶水式组合封装(准备和整理环境的时间，简直比写关键代码耗时还长:P)。欢迎体验和PR,一起持续更新维护。
+本工程从开始准备到初版完成历时一周，主要在工作之余的碎片时间和深夜完成，得益于开源社区既有代码的基础以及python语言的开发效率,所写代码不多，主要是发掘可用api和进行整理、重构、胶水式组合封装(准备和整理环境的时间，简直比写关键代码耗时还长:P)。欢迎体验和PR,一起持续更新维护。

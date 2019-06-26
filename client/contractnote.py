@@ -21,7 +21,7 @@ class ContractNote:
         if "addess" not in config:
             config['address']={}
         config['address'][contractname] = newaddress
-        print (config)
+        #print (config)
         if blocknum!=None:
             if "history" not in config:
                 config["history"]={}

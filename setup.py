@@ -52,7 +52,9 @@ extras_require['dev'] = merge_lists(
 		"Crypto",
 		"pycryptodome",
         "lru-dict",
-        "configobj"
+		#"lru",
+        "configobj",
+		"parsimonious",
     ],
     extras_require['test'],
     extras_require['lint'],
@@ -69,7 +71,7 @@ setup(
     url='',
     include_package_data=True,
     install_requires=[
-        'parsimonious>=0.8.0,<0.9.0',
+        'parsimonious',
     ],
     setup_requires=[''], #setuptools-markdown
     python_requires='>=3.6, <4',
