@@ -19,6 +19,7 @@ extras_require = {}
 extras_require['tools'] = [
     HYPOTHESIS_REQUIREMENT,
 ]
+'''
 extras_require['test'] = merge_lists(
     [
         "pytest==4.4.1",
@@ -38,10 +39,12 @@ extras_require['doc'] = [
    # "Sphinx>=1.6.5,<2",
    # "sphinx_rtd_theme>=0.1.9",
 ]
+
+'''
 extras_require['dev'] = merge_lists(
     [
         "bumpversion>=0.5.3,<1",
-        "pytest-watch>=4.1.0,<5",
+        #"pytest-watch>=4.1.0,<5",
         "wheel",
         #"twine",
         #"ipython",
@@ -56,9 +59,9 @@ extras_require['dev'] = merge_lists(
         "configobj",
 		"parsimonious",
     ],
-    extras_require['test'],
-    extras_require['lint'],
-    extras_require['doc'],
+    #extras_require['test'],
+    #extras_require['lint'],
+    #extras_require['doc'],
 )
 
 setup(
