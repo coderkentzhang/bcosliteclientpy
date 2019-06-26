@@ -344,7 +344,7 @@ if cmd in getcmds:
         #make a default for getBlockBy...
         if(len(inputparams) == 1):
             inputparams.append("false")
-            print("**for getBlockby , missing 2nd arg ,defaut gave:don't retriev transaction detail\n")
+            print("**for getBlockbyNumber/Hash , missing 2nd arg ,defaut (false) gave : withoud retrieve transactions detail.full command,eg: getBlockByNumber 10 true (or false)\n")
     try:
         fmtargs = format_args_by_types(inputparams, types)
     except Exception as e:
