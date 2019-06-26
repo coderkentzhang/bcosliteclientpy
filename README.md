@@ -1,10 +1,10 @@
 # bclosliteclient项目说明
 
-本项目采用Python开发，用于和开源的金融级区块链底层平台FISCO BCOS( https://www.github.com/fisco-bcos/ ) 建立JSONRPC协议的通信。支持版本为FISCO BCOS 2.0 RC1~RC3以及后续版本。
+本项目采用Python开发，用于和开源的金融级区块链底层平台FISCO BCOS( https://www.github.com/FISCO-BCOS/ ) 建立JSONRPC协议的通信。支持版本为FISCO BCOS 2.0 RC1~RC3以及后续版本。
 
-意图是构建一个代码尽量少，逻辑尽情轻，层级尽量浅，结构容易理解，可快速复用二次开发的python语言的客户端，所以命名内嵌了"lite"，也并没有生成正式发行包，仅全部开源代码，采用宽松的的MIT License,欢迎社区体验、修订、增补优化，并进行二次开发，打造顺手的FISCO BCOS Python客户端。
+意图是构建一个代码尽量少，逻辑尽情轻，层级尽量浅，结构容易理解，可快速复用二次开发的python语言的客户端，所以命名内嵌了"lite"，也并没有生成正式发行包，仅全部开源代码，采用宽松的的MIT License，欢迎社区体验、修订、增补优化，打造顺手的FISCO BCOS Python客户端。
 
-封装的接口支持所有FISCO BCOS2.0 JSON RPC定义，支持交易输入输出、event log等绝大部分的abi数据拼装和解析，支持直观的keystore账户管理(创建和加载等)，支持部署合约后保存最新地址和记录部署历史，基本上是一个简单而完整的fisco bcos 2.0客户端SDK。
+封装的接口支持所有FISCO BCOS2.0 JSON RPC定义，支持交易输入输出、event log等abi数据拼装和解析，支持直观的keystore账户管理(创建和加载等)，部署合约后保存最新地址和记录部署历史，基本上是一个简单而完整的fisco bcos 2.0客户端SDK。
 
 实现了一个命令行的console交互，简单配置后可以和节点通过JSON RPC接口通信，创建帐号、部署合约、发送交易查询信息。
 
@@ -46,15 +46,15 @@
 
 以下在windows的cmd环境工作
 
-1.安装命令：pip install virtualenv
+    1.安装命令：pip install virtualenv
 
-2.建立一个工作目录，如d:\python_env,进入d:\python_env
+    2.建立一个工作目录，如d:\python_env,进入d:\python_env
 
-3.创建一个独立的python环境: virtualenv blc  ("blc"为环境名，可用其他名字)
+    3.创建一个独立的python环境: virtualenv blc  ("blc"为环境名，可用其他名字)
 
-4.运行：blc\Scripts\activate.bat
+    4.运行：blc\Scripts\activate.bat
 
-5.更新pip: pip install --upgrade pip
+    5.更新pip: pip install --upgrade pip
 
 可以看到命令行前面多了（blc），独立的名为blc的python环境建立完成
 
