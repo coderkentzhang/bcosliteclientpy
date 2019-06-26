@@ -2,15 +2,18 @@
 
 本项目采用Python开发，用于和开源的金融级区块链底层平台FISCO BCOS( https://www.github.com/fisco-bcos/ ) 建立JSONRPC协议的通信。支持版本为FISCO BCOS 2.0 RC1~RC3以及后续版本。
 
-意图是构建一个代码尽量少，逻辑尽情轻，层级尽量浅，容易理解，可快速复用二次开发的python语言的客户端，所以命名内嵌了"lite"。
+意图是构建一个代码尽量少，逻辑尽情轻，层级尽量浅，结构容易理解，可快速复用二次开发的python语言的客户端，所以命名内嵌了"lite"，也并没有生成正式发行包，仅全部开源代码，采用宽松的的MIT License,欢迎社区体验、修订、增补优化，并进行二次开发，打造顺手的FISCO BCOS Python客户端。
 
 封装的接口支持所有FISCO BCOS2.0 JSON RPC定义，支持交易输入输出、event log等绝大部分的abi数据拼装和解析，支持直观的keystore账户管理(创建和加载等)，支持部署合约后保存最新地址和记录部署历史，基本上是一个简单而完整的fisco bcos 2.0客户端SDK。
 
 实现了一个命令行的console交互，简单配置后可以和节点通过JSON RPC接口通信，创建帐号、部署合约、发送交易查询信息。
 
-已经适配的python版本:python 3.6.x, 3.7.x
+运行此客户端前应先安装FISCO BCOS节点，并组成一个可正常运行的链，参见[FISCO BCOS安装](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/installation.html)，顺利的话只需不到5分钟，也可以安装[官方控制台](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/installation.html#id7)进行体验
 
 ----------------------------------------------------------------------------
+
+本项目已经适配的python版本:python 3.6.3, 3.7.x
+
 ## linux环境准备：
 
 安装和使用，参见本目录下的 [linux_python_setup.md](./linux_python_setup.md)
