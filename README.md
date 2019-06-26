@@ -180,22 +180,22 @@ clientdemo.py和getdemo.py演示调用client/bcosclient.py里实现的接口，c
 ----------------------------------------------------------------------------
 ## 主要基础组件
 
-client/bcosclient.py客户端SDK，封装了加载配置，JSON RPC接口等。
+**client/bcosclient.py** 客户端SDK，封装了加载配置，JSON RPC接口等。
 
-client/bcostransaction.py 根据bcos对交易数据结构的定义，增加字段，修改拼装方法，实现交易编码.client/transaction.py为原以太坊交易格式的实现。
+**client/bcostransaction.py** 根据bcos对交易数据结构的定义，增加字段，修改拼装方法，实现交易编码.client/transaction.py为原以太坊交易格式的实现。
 
-eth_account/account.py 实现帐户的创建，保存，加载等（加密和解密帐户keystore文件约需1s以上）
+**eth_account/account.py** 实现帐户的创建，保存，加载等（加密和解密帐户keystore文件约需1s以上）
 
-client/contratnote.py 采用ini配置文件格式保存合约的最新地址和历史地址，以便加载（如console命令里可以用(合约名 last)指代某个合约最新部署的地址）
+**client/contratnote.py** 采用ini配置文件格式保存合约的最新地址和历史地址，以便加载（如console命令里可以用(合约名 last)指代某个合约最新部署的地址）
 
-client/datatype_parser.py 管理abi，用方法名和4字节selector操作方法的abi，提供一系列数据解析接口，解析receipt log,tx input/output等
+**client/datatype_parser.py** 管理abi，用function名和4字节selector操作合约function的abi，提供一系列数据解析接口，解析receipt log,tx input/output等
 
-client/clientlogger.py logger定义，目前包括客户端日志和统计日志两种
+**client/clientlogger.py** logger定义，目前包括客户端日志和统计日志两种
 
-client/stattool.py 一个简单的统计数据收集和打印日志的工具类
+**client/stattool.py** 一个简单的统计数据收集和打印日志的工具类
 
 
-bcosclient.py 里实现的发送交易接口为：
+**bcosclient.py** 里实现的发送交易接口为：
 
     deploy：部署合约
 
