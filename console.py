@@ -138,10 +138,11 @@ def print_parse_transaction(tx,contractname,parser=None):
 # console cmd entity
 #--------------------------------------------------------------------------------------------
 validcmds.append("newaccount")
-usagemsg.append('''创建一个新帐户，参数为帐户名(如alice,bob)和密码
+usagemsg.append('''newaccount [name] [password] [save]
+创建一个新帐户，参数为帐户名(如alice,bob)和密码
 结果加密保存在配置文件指定的帐户目录 *如同目录下已经有同名帐户文件，旧文件会复制一个备份
 如输入了"save"参数在最后，则不做询问直接备份和写入
-newaccount [name] [password] [-f]: \ncreate a new account ,save to :[{}] (default) , the path in client_config.py:[account_keyfile_path]
+create a new account ,save to :[{}] (default) , the path in client_config.py:[account_keyfile_path]
 if account file has exist ,then old file will save to a backup
 if "save" arg follows,then backup file and write new without ask'''
                 .format(client_config.account_keyfile_path))
@@ -206,8 +207,9 @@ if cmd == 'newaccount' :
 # console cmd entity
 #--------------------------------------------------------------------------------------------
 validcmds.append("deploy")
-usagemsg.append('''部署合约,合约来自编译后的bin文件。如给出'save'参数，新地址会写入本地记录文件
-deploy [contract_binary_file] [save]\ndeploy contract from a binary file,eg: deploy sample/SimpleInfo.bin
+usagemsg.append('''deploy [contract_binary_file] [save]
+部署合约,合约来自编译后的bin文件。如给出'save'参数，新地址会写入本地记录文件
+ndeploy contract from a binary file,eg: deploy sample/SimpleInfo.bin
 if 'save' in args, so save addres to file''')
 if cmd=="deploy":
     '''deploy abi bin file'''
@@ -233,8 +235,9 @@ if cmd=="deploy":
 # console cmd entity
 #--------------------------------------------------------------------------------------------
 validcmds.append("call")
-usagemsg.append('''call合约的一个只读接口
-call [contractname] [address] [func]  [args...] 
+usagemsg.append('''call [contractname] [address] [func]  [args...]
+call合约的一个只读接口,解析返回值
+call a constant funciton of contract and get the returns
 eg: call SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC getbalance1 11
 if address is "last" ,then load last address from :{}
 eg: call SimpleInfo last getall
@@ -264,8 +267,9 @@ if cmd=="call":
 # console cmd entity
 #--------------------------------------------------------------------------------------------
 validcmds.append("sendtx")
-usagemsg.append('''发送交易调用指定合约的接口，交易如成功，结果会写入区块和状态
-sendtx [contractname]  [address] [func] [args...] 
+usagemsg.append('''sendtx [contractname]  [address] [func] [args...]
+发送交易调用指定合约的接口，交易如成功，结果会写入区块和状态
+send transaction,will commit to blockchain if success
 eg: sendtx SimpleInfo 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC set alice 100 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
 if address is "last" ,then load last address from :{}
 eg: sendtx SimpleInfo last set 'test' 100 '0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC'
@@ -283,7 +287,6 @@ if cmd=="sendtx":
         address = ContractNote.get_last(contractname)
         if address == None:
             sys.exit("\ncan not get last address for [{}],break;\n".format(contractname))
-
     funcname = params["func"]
    # print("data_parser.func_abi_map_by_name",data_parser.func_abi_map_by_name)
     inputabi = data_parser.func_abi_map_by_name[funcname]["inputs"]
@@ -297,11 +300,10 @@ if cmd=="sendtx":
     #解析receipt里的log 和 相关的tx ,output
     print_receipt_logs_and_txoutput(receipt,"",data_parser)
 
-
-
 #--------------------------------------------------------------------------------------------
 # console cmd entity
 #--------------------------------------------------------------------------------------------
+#用比较通用的方式处理所有getXXX接口，处理少量特例
 getcmds=dict()
 getcmds["getNodeVersion"]=[]
 getcmds["getBlockNumber"]=[]
@@ -327,15 +329,13 @@ getcmds["getCode"]=["str"]
 getcmds["getTotalTransactionCount"]=[]
 getcmds["getSystemConfigByKey"]=[["str"],"name : 配置参数名(system param name),eg:tx_count_limit"]
 
-
-
-
 #--------------------------------------------------------------------------------------------
 # console cmd entity
 #--------------------------------------------------------------------------------------------
-usagemsg.append('''各种get接口，查询节点的各种状态（不一一列出，可用list指令查看接口列表和参数名）
-all the 'get' command for JSON RPC\neg: [getBlockByNumber 10 true].
-use 'list' cmd to show all getcmds ''')
+usagemsg.append('''all the 'get' command for JSON RPC
+各种get接口，查询节点的各种状态（不一一列出，可用list指令查看接口列表和参数名）
+neg: [getBlockByNumber 10 true]. 
+use 'python console.py list' to show all get cmds ''')
 if cmd in getcmds:
     types=[]
     if len(getcmds[cmd]) > 0:
@@ -345,7 +345,6 @@ if cmd in getcmds:
         if(len(inputparams) == 1):
             inputparams.append("false")
             print("**for getBlockby , missing 2nd arg ,defaut gave:don't retriev transaction detail\n")
-
     try:
         fmtargs = format_args_by_types(inputparams, types)
     except Exception as e:
@@ -355,8 +354,6 @@ if cmd in getcmds:
             memo =" {} ".format(cmdinfo[1])
         print("args not match,should be : {} {},break\n".format(cmd,memo) )
         sys.exit("please try again...")
-
-
     print("is a get :{},params:{}".format(cmd,fmtargs) )
     params = [client.groupid]
     params.extend(fmtargs)
@@ -390,8 +387,9 @@ if cmd in getcmds:
             print_parse_transaction(result,abifile)
 
 validcmds.append("list")
-usagemsg.append('''列出所有支持的get接口名和参数
-list: list all getcmds (getBlock...getTransaction...getReceipt..getOthers)''')
+usagemsg.append('''list
+列出所有支持的get接口名和参数
+list: list all  getcmds  has implemented (getBlock...getTransaction...getReceipt..getOthers)''')
 if cmd == "list":
     i = 0
     print("query commands:")
@@ -407,8 +405,9 @@ if cmd == "list":
 # console cmd entity
 #--------------------------------------------------------------------------------------------
 validcmds.append("int")
-usagemsg.append('''输入一个十六进制的数字，转为十进制（考虑到json接口里很多数字都是十六进制的，所以提供这个功能）
-int [hexnum]: convert a hex str to int ,eg: int 0x65''')
+usagemsg.append('''int [hex number]
+输入一个十六进制的数字，转为十进制（考虑到json接口里很多数字都是十六进制的，所以提供这个功能）
+convert a hex str to int ,eg: int 0x65''')
 if cmd == 'int':
     print(int(inputparams[0],16))
 
@@ -416,8 +415,8 @@ if cmd == 'int':
 # console cmd entity
 #--------------------------------------------------------------------------------------------
 validcmds.append("txinput")
-usagemsg.append('''复制一段来自transaction的inputdata(十六进制字符串)，指定合约名，则可以自动解析（合约的abi文件应存在指定目录下）
-txinput [contractname] [inputdata(inhex)]
+usagemsg.append('''txinput [contractname] [inputdata(in hex string)]
+复制一段来自transaction的inputdata(十六进制字符串)，指定合约名，则可以自动解析（合约的abi文件应存在指定目录下）
 parse the transaction input data by  contractname，eg: txinput SimpleInfo [txinputdata]''')
 if cmd =="txinput":
     contractname = inputparams[0]
@@ -432,8 +431,9 @@ if cmd =="txinput":
 # console cmd entity
 #--------------------------------------------------------------------------------------------
 validcmds.append("checkaddr")
-usagemsg.append('''将普通地址转为自校验地址,自校验地址使用时不容易出错
-checkaddr [address]: change address to checksum address according EIP55:
+usagemsg.append('''checkaddr [address]
+将普通地址转为自校验地址,自校验地址使用时不容易出错
+change address to checksum address according EIP55:
 to_checksum_address: 0xf2c07c98a6829ae61f3cb40c69f6b2f035dd63fc -> 0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
 ''')
 if cmd == "checkaddr":
@@ -453,7 +453,8 @@ def printusage():
 
 validcmds.append("usage")
 if cmd == "usage":
-    print('''使用说明,输入python console.py [指令 参数列表]
+    print('''usage
+使用说明,输入python console.py [指令 参数列表]
 Usage of console (FISCO BCOS 2.0 lite client @python):
 python console.py [cmd args]
 ''')
