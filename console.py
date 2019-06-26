@@ -386,6 +386,10 @@ if cmd in getcmds:
         if abifile!=None:
             print_parse_transaction(result,abifile)
 
+
+#--------------------------------------------------------------------------------------------
+# console cmd entity
+#--------------------------------------------------------------------------------------------
 validcmds.append("list")
 usagemsg.append('''list
 列出所有支持的get接口名和参数
