@@ -58,7 +58,7 @@
 
 可以看到命令行前面多了（blc），独立的名为blc的python环境建立完成
 
-另外，在windows上部分python库依赖Visual C++的库，可以到https://visualstudio.microsoft.com/downloads 下载安装ms的文件解决error: Microsoft Visual C++ 14.0 is required. Get it with "Microsoft Visual C++ Build Tools": https://visualstudio.microsoft.com/downloads/ 或https://pan.baidu.com/s/12TcFkZ6KFLhofCT-osJOSg 密码wkgv（百度云文件不保证一定永久存在） 下载VC的安装
+另外，在windows上部分python库依赖Visual C++ 14.0 的库，可以到https://visualstudio.microsoft.com/downloads 下载安装ms的文件解决error: Microsoft Visual C++ 14.0 is required. Get it with "Microsoft Visual C++ Build Tools": https://visualstudio.microsoft.com/downloads/ （注意选择vs 2005即14.0版）或链接: https://pan.baidu.com/s/1ZmDUGZjZNgFJ8D14zBu9og 提取码: zrby （百度云文件不保证一定永久存在） 下载VC的安装
 
 ----------------------------------------------------------------------------
 
