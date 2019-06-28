@@ -99,9 +99,9 @@
 	
 修改配置后，运行体验
 
-clientdemo.py会加载默认演示合约sample/SimpleInfo.sol以及其abi,bin，进行部署，接口调用，解析返回信息等。可以参考clientdemo.py，编写其他逻辑。
+demo_client.py会加载默认演示合约sample/SimpleInfo.sol以及其abi,bin，进行部署，接口调用，解析返回信息等。可以参考demo_client.py，编写其他逻辑。
 
-	python clientdemo.py
+	python demo_client.py
 
 ** 如报告Crypto包不存在，进入virtualenv的目录如d:\python_env\blc\lib\site-packages\,将小写的crypto目录名第一个字母改为大写Crypto （这貌似是windows环境的一个坑) **
 
@@ -116,7 +116,7 @@ logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日�
 
 ### 1 体验应用-->
 
-clientdemo.py和getdemo.py演示调用client/bcosclient.py里实现的接口，clientdemo.py演示部署/交易/call流程，getdemo.py已经实现FISCO BCOS2.0的所有rpc查询接口
+demo_client.py和demo_get.py演示调用client/bcosclient.py里实现的接口，demo_client.py演示部署/交易/call流程，demo_get.py已经实现FISCO BCOS2.0的所有rpc查询接口
 
 ### 2 console.py 控制台应用-->
 
