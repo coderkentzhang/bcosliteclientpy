@@ -190,7 +190,7 @@ demo_client.py和demo_get.py演示调用client/bcosclient.py里实现的接口�
 
 **client/contratnote.py** 采用ini配置文件格式保存合约的最新地址和历史地址，以便加载（如console命令里可以用(合约名 last)指代某个合约最新部署的地址）
 
-**client/datatype_parser.py** 管理abi，用function名和4字节selector操作合约function的abi，提供一系列数据解析接口，解析receipt log,tx input/output等
+**client/datatype_parser.py** 管理abi，用function名和4字节selector定位查找到合约function的abi，提供一系列数据解析接口，解析receipt log,tx input/output等
 
 **client/clientlogger.py** logger定义，目前包括客户端日志和统计日志两种
 
