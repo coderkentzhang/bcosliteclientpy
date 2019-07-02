@@ -125,7 +125,7 @@ abi文件定义了合约的事务方法，只读方法，事件等，只要得�
 
 如SimpleInfo.sol合约里定义了 
    
-   function set(string n,uint256 b,address a) public returns(int)
+    function set(string n,uint256 b,address a) public returns(int)
 
 对应的命令是 
     
