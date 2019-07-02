@@ -97,13 +97,14 @@
 	
 	logdir = bin/logs    #默认在此目录下生成日志，此目录必须存在
 	
-修改配置后，运行体验
+修改配置后，运行一个简单命令确认和节点连接是否正常
 
-demo_client.py会加载默认演示合约sample/SimpleInfo.sol以及其abi,bin，进行部署，接口调用，解析返回信息等。可以参考demo_client.py，编写其他逻辑。
+	python console.py getNodeVersion
 
-	python demo_client.py
+如能读到节点版本信息，那么两者连接是ok的。
 
-** 如报告Crypto包不存在，进入virtualenv的目录如d:\python_env\blc\lib\site-packages\,将小写的crypto目录名第一个字母改为大写Crypto （这貌似是windows环境的一个坑) **
+
+** 如报告Crypto包不存在，进入virtualenv的目录如d:\python_env\blc\lib\site-packages\,将小写的crypto目录名第一个字母改为大写Crypto （这貌似是windows环境的一个坑,linux上不存在) **
 
 ** 由于不同环境操作系统依赖，python版本，网络情况有所不同，如自动安装依赖部分不成功，可通过pip install [指定模块]的方式尝试安装 **
 
@@ -112,20 +113,29 @@ logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日�
 
 ----------------------------------------------------------------------------
 
+##合约相关：
+
+后缀名为.sol的solidity合约代码文件（本客户端不实现编译功能，sol文件仅供参考查看），请采用fisco-bcos的控制台，[对合约sol代码文件进行编译](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/tutorial/sdk_application.html?highlight=%E7%BC%96%E8%AF%91#id7)
+
+合约编译后，在控制台console/contracts/sdk目录下有后缀名为.abi,.bin的文件，将其复制到本客户端的contracts目录下，供后续console.py和demo_transaction.py的部署、调用、解析使用。
+
+
+----------------------------------------------------------------------------
+
+
 ## 本项目提供可执行的应用如下，均基于client/bcosclient.py基础组件建立：
 
 ### 1 体验应用-->
 
-demo_client.py和demo_get.py演示调用client/bcosclient.py里实现的接口，demo_client.py演示部署/交易/call流程，demo_get.py已经实现FISCO BCOS2.0的所有rpc查询接口
+demo_client.py和demo_get.py演示调用client/bcosclient.py里实现的接口，demo_client.py演示部署/交易/call流程，demo_get.py已经实现FISCO BCOS2.0的所有rpc查询接口(如面向一条新链运行，那么有可能获取不到部分区块和交易等信息导致报错，是正常的，可打开该文件修改输入参数，查询指定的区块和交易)
 
 ### 2 console.py 控制台应用-->
 
-使用 python console.py usage 查看已经实现的命令，包括创建帐号，delploy/call/sendtx，JSON RPC查询接口等
+	python console.py usage 
 
-** 创建帐号后，如需要做为默认帐号使用，注意修改client_config.py的account_keyfile和account_password配置项 **
+查看已经实现的命令，包括创建帐号，delploy/call/sendtx，JSON RPC查询接口等
 
-可先运行 python console.py getNodeVersion 检测下客户端和节点是否正常联通，如能读到节点版本信息，那么两者连接是ok的。
-
+** 采用创建帐号的命令创建帐号后，如需要做为默认帐号使用，注意修改client_config.py的account_keyfile和account_password配置项 **
 
 	1): newaccount [name] [password] [save]
 	创建一个新帐户，参数为帐户名(如alice,bob)和密码
@@ -136,8 +146,8 @@ demo_client.py和demo_get.py演示调用client/bcosclient.py里实现的接口�
 	if "save" arg follows,then backup file and write new without ask
 
 	2): deploy [contract_binary_file] [save]
-	部署合约,合约来自编译后的bin文件。如给出'save'参数，新地址会写入本地记录文件
-	ndeploy contract from a binary file,eg: deploy sample/SimpleInfo.bin
+	部署合约,合约来自编译后的bin文件（部署命令为了审慎起见，需要指定bin文件的全路径）。如给出'save'参数，新地址会写入本地记录文件
+	ndeploy contract from a binary file,eg: deploy contracts/SimpleInfo.bin
 	if 'save' in args, so save addres to file
 
 	3): call [contractname] [address] [func]  [args...]
@@ -180,7 +190,7 @@ demo_client.py和demo_get.py演示调用client/bcosclient.py里实现的接口�
 
 
 ----------------------------------------------------------------------------
-## 主要基础组件
+## 主要基础模块
 
 **client/bcosclient.py** 客户端SDK，封装了加载配置，JSON RPC接口等。
 

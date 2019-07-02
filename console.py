@@ -41,8 +41,8 @@ inputparams = args.cmd[1:]
 #--------------------------------------------------------------------------------------------
 def default_abi_file(contractname):
     abi_file = contractname
-    if not abi_file.endswith(".abi"): #default from sample/xxxx.abi,if only input a name
-        abi_file = "sample/" + contractname + ".abi"
+    if not abi_file.endswith(".abi"): #default from contracts/xxxx.abi,if only input a name
+        abi_file = "contracts/" + contractname + ".abi"
     return abi_file
 
 def fill_params(params,paramsname):
@@ -208,8 +208,8 @@ if cmd == 'newaccount' :
 #--------------------------------------------------------------------------------------------
 validcmds.append("deploy")
 usagemsg.append('''deploy [contract_binary_file] [save]
-部署合约,合约来自编译后的bin文件。如给出'save'参数，新地址会写入本地记录文件
-ndeploy contract from a binary file,eg: deploy sample/SimpleInfo.bin
+部署合约,合约来自编译后的bin文件（部署命令为了审慎起见，需要指定bin文件的全路径）。如给出'save'参数，新地址会写入本地记录文件
+ndeploy contract from a binary file,eg: deploy contracts/SimpleInfo.bin
 if 'save' in args, so save addres to file''')
 if cmd=="deploy":
     '''deploy abi bin file'''
