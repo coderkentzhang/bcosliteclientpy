@@ -119,6 +119,7 @@ logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日�
 
 合约编译后，在控制台console/contracts/sdk目录下有后缀名为.abi,.bin的文件，将其复制到本客户端的contracts目录下，供后续console.py和demo_transaction.py的部署、调用、解析使用。
 
+控制台console.py和demo_transaction.py都默认从contracts目录下按指定名字加载abi信息，如需放到别的目录下，可直接修改这两个文件里的相关定义
 
 ----------------------------------------------------------------------------
 
