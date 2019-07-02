@@ -104,7 +104,7 @@
 如能读到节点版本信息，那么两者连接是ok的。
 
 
-**如报告Crypto包不存在，进入virtualenv的目录如d:\python_env\blc\lib\site-packages\,将小写的crypto目录名第一个字母改为大写Crypto （这貌似是windows环境的一个坑,linux上不存在)**
+**如报告Crypto包不存在，进入virtualenv的目录如d:\python_env\blc\lib\site-packages\,将小写的crypto目录名第一个字母改为大写Crypto （这貌似是windows环境的一个坑,linux上不存在这个问题)**
 
 **由于不同环境操作系统依赖，python版本，网络情况有所不同，如自动安装依赖部分不成功，可通过pip install [指定模块]的方式尝试安装**
 
@@ -154,7 +154,7 @@ demo_client.py和demo_get.py演示调用client/bcosclient.py里实现的接口�
 
 查看已经实现的命令，包括创建帐号，delploy/call/sendtx，JSON RPC查询接口等
 
-** 采用创建帐号的命令创建帐号后，如需要做为默认帐号使用，注意修改client_config.py的account_keyfile和account_password配置项 **
+**采用创建帐号的命令创建帐号后，如需要做为默认帐号使用，注意修改client_config.py的account_keyfile和account_password配置项**
 
 	1): newaccount [name] [password] [save]
 	创建一个新帐户，参数为帐户名(如alice,bob)和密码
