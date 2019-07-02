@@ -35,6 +35,7 @@ args = parser.parse_args()
 print("\n>> user input : {}\n".format(args.cmd) )
 cmd = args.cmd[0]
 inputparams = args.cmd[1:]
+contracts_dir = "contracts"
 
 #--------------------------------------------------------------------------------------------
 # useful functions
@@ -42,7 +43,7 @@ inputparams = args.cmd[1:]
 def default_abi_file(contractname):
     abi_file = contractname
     if not abi_file.endswith(".abi"): #default from contracts/xxxx.abi,if only input a name
-        abi_file = "contracts/" + contractname + ".abi"
+        abi_file = contracts_dir + "/" + contractname + ".abi"
     return abi_file
 
 def fill_params(params,paramsname):
