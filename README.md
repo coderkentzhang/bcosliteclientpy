@@ -117,9 +117,19 @@ logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日�
 
 后缀名为.sol的solidity合约代码文件（本客户端不实现编译功能，sol文件仅供参考查看），请采用fisco-bcos的控制台，[对合约sol代码文件进行编译](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/tutorial/sdk_application.html?highlight=%E7%BC%96%E8%AF%91#id7)
 
-合约编译后，在控制台console/contracts/sdk目录下有后缀名为.abi,.bin的文件，将其复制到本客户端的contracts目录下，供后续console.py和demo_transaction.py的部署、调用、解析使用。
+合约编译后，在控制台console/contracts/sdk目录下有后缀名为.abi,.bin的文件，将其复制到本客户端的contracts目录下，bin文件供console.py和demo_transaction.py用于部署合约,abi文件则用于调用接口、解析数据。
 
-控制台console.py和demo_transaction.py都默认从contracts目录下按指定名字加载abi信息，如需放到别的目录下，可直接修改这两个文件里的相关定义
+控制台console.py和demo_transaction.py都默认从contracts目录下按指定名字加载abi信息，如需放到别的目录下，可直接修改这两个文件里的相关定义。
+
+abi文件定义了合约的事务方法，只读方法，事件等，只要得知abi,即可采用console.py，指定方法名，合约地址，正确的参数列表，调用abi里定义的方法。不需要类似java客户端那样再生成一组面向特定合约的客户端代码组件。
+
+如SimpleInfo.sol合约里定义了 function set(string n,uint256 b,address a) public returns(int)
+
+对应的命令是 python console.py sendtx set SimpleInfo [合约部署到链上的地址] name  100  0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
+
+对只读方法的调用示例 python console.py call SimpleInfo [合约部署到链上的地址]  getall
+
+注意，console.py 对事务方法和只读方法两者的调用,使用不同的关键字sendtx/call。
 
 ----------------------------------------------------------------------------
 
