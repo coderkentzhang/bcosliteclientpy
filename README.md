@@ -148,7 +148,7 @@ demo_client.py和demo_get.py演示调用client/bcosclient.py里实现的接口�
 	if "save" arg follows,then backup file and write new without ask
 
 	2): deploy [contract_binary_file] [save]
-	部署合约,合约来自编译后的bin文件（部署命令为了审慎起见，需要指定bin文件的全路径）。如给出'save'参数，新地址会写入本地记录文件
+	部署合约,合约来自编译后的bin文件（部署命令为了审慎起见，需要指定bin文件的路径）。如给出'save'参数，新地址会写入本地记录文件
 	ndeploy contract from a binary file,eg: deploy contracts/SimpleInfo.bin
 	if 'save' in args, so save addres to file
 
