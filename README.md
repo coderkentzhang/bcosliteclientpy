@@ -104,16 +104,16 @@
 如能读到节点版本信息，那么两者连接是ok的。
 
 
-** 如报告Crypto包不存在，进入virtualenv的目录如d:\python_env\blc\lib\site-packages\,将小写的crypto目录名第一个字母改为大写Crypto （这貌似是windows环境的一个坑,linux上不存在) **
+**如报告Crypto包不存在，进入virtualenv的目录如d:\python_env\blc\lib\site-packages\,将小写的crypto目录名第一个字母改为大写Crypto （这貌似是windows环境的一个坑,linux上不存在)**
 
-** 由于不同环境操作系统依赖，python版本，网络情况有所不同，如自动安装依赖部分不成功，可通过pip install [指定模块]的方式尝试安装 **
+**由于不同环境操作系统依赖，python版本，网络情况有所不同，如自动安装依赖部分不成功，可通过pip install [指定模块]的方式尝试安装**
 
 
 logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日志，包括客户端日志和统计日志两种，默认级别为DEBUG
 
 ----------------------------------------------------------------------------
 
-##合约相关：
+## 合约相关：
 
 后缀名为.sol的solidity合约代码文件（本客户端不实现编译功能，sol文件仅供参考查看），请采用fisco-bcos的控制台，[对合约sol代码文件进行编译](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/tutorial/sdk_application.html?highlight=%E7%BC%96%E8%AF%91#id7)
 
@@ -123,11 +123,17 @@ logger配置参见client/clientlogger.py。默认在bin/logs下生成滚动日�
 
 abi文件定义了合约的事务方法，只读方法，事件等，只要得知abi,即可采用console.py，指定方法名，合约地址，正确的参数列表，调用abi里定义的方法。不需要类似java客户端那样再生成一组面向特定合约的客户端代码组件。
 
-如SimpleInfo.sol合约里定义了 function set(string n,uint256 b,address a) public returns(int)
+如SimpleInfo.sol合约里定义了 
+   
+   function set(string n,uint256 b,address a) public returns(int)
 
-对应的命令是 python console.py sendtx set SimpleInfo [合约部署到链上的地址] name  100  0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
+对应的命令是 
+    
+    python console.py sendtx set SimpleInfo [合约部署到链上的地址] name  100  0xF2c07c98a6829aE61F3cB40c69f6b2f035dD63FC
 
-对只读方法的调用示例 python console.py call SimpleInfo [合约部署到链上的地址]  getall
+对只读方法的调用示例 
+    
+    python console.py call SimpleInfo [合约部署到链上的地址]  getall
 
 注意，console.py 对事务方法和只读方法两者的调用,使用不同的关键字sendtx/call。
 
