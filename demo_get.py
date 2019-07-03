@@ -21,7 +21,7 @@ print(info)
 
 
 #从文件加载abi定义
-abi_file  ="sample/SimpleInfo.abi"
+abi_file  ="contracts/SimpleInfo.abi"
 data_parser = DatatypeParser()
 data_parser.load_abi_file(abi_file)
 contract_abi = data_parser.contract_abi
